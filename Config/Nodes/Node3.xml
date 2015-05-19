@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Node Id="NetworkNode3" CloudHost="localhost" CloudPort="3333" ManagerHost="localhost" ManagerPort="4444">
+  <Ports>
+    <InputPorts>
+      <Port Id="IP1" />
+	  <Port Id="IP2" />
+	  <Port Id="IP3" />
+	  <Port Id="CIP" />
+    </InputPorts>
+    <OutputPorts>
+      <Port Id="OP1" />
+	  <Port Id="OP2" />
+	  <Port Id="OP3" />
+	  <Port Id="COP" />
+    </OutputPorts>
+  </Ports>
+</Node>

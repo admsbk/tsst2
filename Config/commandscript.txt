@@ -1,0 +1,14 @@
+NetworkNode1%SET%CIP.%OP1.1
+NetworkNode2%SET%IP1.1%COP.
+NetworkNode2%SET%CIP.%OP1.1
+NetworkNode5%SET%IP1.1%OP1.1
+NetworkNode1%SET%IP1.1%COP.
+NetworkNode3%SET%CIP.%OP1.1
+NetworkNode2%SET%IP2.1%OP1.2
+NetworkNode5%SET%IP1.2%OP2.1
+NetworkNode3%SET%IP1.1%COP.
+NetworkNode4%SET%CIP.%OP1.1
+NetworkNode1%SET%IP2.1%OP2.1
+NetworkNode5%SET%IP2.1%OP3.1
+NetworkNode2%SET%IP3.1%OP2.1
+NetworkNode3%SET%IP2.1%COP.

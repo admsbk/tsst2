@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Manager Id= "Network Manager" ManagerPort ="4444" >
+	<VirtualContainers>
+		<VirtualContainer Id="VC-3" BitRate="34"/>
+		<VirtualContainer Id="VC-4" BitRate="140"/>
+	</VirtualContainers>
+
+
+</Manager>

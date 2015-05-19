@@ -1,0 +1,46 @@
+﻿<Window x:Class="ClientNode.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Client" Height="390.667" Width="356.25"
+        Icon = "./icon.ico">
+
+    <Grid>
+        <GroupBox Header="Chat" HorizontalAlignment="Left" Height="196" Margin="10,137,0,0" VerticalAlignment="Top" Width="320">
+            <Grid HorizontalAlignment="Left" Height="182" VerticalAlignment="Top"
+		            Width="310" Margin="0,0,-2,0">
+                <Button x:Name="Button_1" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,152,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
+                <TextBox x:Name="toSend" HorizontalAlignment="Left" Height="20" Margin="0,152,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
+                <ScrollViewer x:Name="scroll" Margin="0,0,0,35" Grid.Row ="1" MaxHeight="120" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <Grid x:Name="chat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
+                </ScrollViewer>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Call" HorizontalAlignment="Left" Height="46" Margin="10,86,0,0" VerticalAlignment="Top" Width="320"/>
+        <GroupBox Header="Setup" HorizontalAlignment="Left" Height="49" Margin="10,32,0,0" VerticalAlignment="Top" Width="168">
+            <Button x:Name="ConnectButton" Content="Connect to Cloud" HorizontalAlignment="Left" Height="26" Margin="10,0,0,0" VerticalAlignment="Top" Width="139" Click="Button_Click"/>
+        </GroupBox>
+        <GroupBox Header="Status" HorizontalAlignment="Left" Height="49" Margin="183,32,0,0" VerticalAlignment="Top" Width="146" >
+            <TextBlock x:Name="statusBar" HorizontalAlignment="Right" TextAlignment="Center" Margin="0,6,-2,0" TextWrapping="Wrap" Text="Disconnected" Foreground="Red" VerticalAlignment="Center" Height="21" Width="136">
+
+            </TextBlock>
+
+
+        </GroupBox>
+        <Menu HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="348">
+            <MenuItem Header="_General">
+                <MenuItem Header="_Load configuration..." Click="Load_Conf_Click"/>
+                <Separator />
+                <MenuItem Header="_About..." Click="About_Click" />
+                <Separator />
+                <MenuItem Header="_Exit..." Click="Exit_Click"/>
+            </MenuItem>
+        </Menu>
+        <StatusBar x:Name="status" HorizontalAlignment="Left" Height="27" Margin="0,333,0,0" VerticalAlignment="Top" Width="348">
+            <StatusBarItem Margin="0,0,0,6">
+                <TextBlock Name="txtBlock" />
+            </StatusBarItem>
+        </StatusBar>
+
+
+    </Grid>
+</Window>
