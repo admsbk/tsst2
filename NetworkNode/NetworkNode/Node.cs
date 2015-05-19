@@ -25,7 +25,7 @@ namespace NetworkNode
         private transportClient manager;
         private networkLibrary.SwitchingBoxNode switchTable;
         private networkLibrary.SynchronousTransportModule[] STM;
-        private List<Link> linkList;
+        private List<CrossConnection> linkList;
         public transportClient.NewMsgHandler newMessageHandler { get; set; }
         public transportClient.NewMsgHandler newOrderHandler { get; set; }
         
@@ -46,7 +46,7 @@ namespace NetworkNode
             this.mainWindow = mainWindow;
             rIndex = Grid.GetRow(logs);
             switchTable = new SwitchingBoxNode();
-            linkList = new List<Link>();
+            linkList = new List<CrossConnection>();
         }
 
         private void startSending()
@@ -291,7 +291,7 @@ namespace NetworkNode
                        
                             if (switchTable.addLink(parsed1[0], parsed1[1], parsed2[0], parsed2[1]))
                             {
-                                Link newLink = new Link(Convert.ToString(linkList.Count() + 1), parsed1[0], parsed1[1], parsed2[0], parsed2[1]);
+                                CrossConnection newLink = new CrossConnection(Convert.ToString(linkList.Count() + 1), parsed1[0], parsed1[1], parsed2[0], parsed2[1]);
                                 linkList.Add(newLink);
 
                                 Application.Current.Dispatcher.Invoke((Action)(() =>

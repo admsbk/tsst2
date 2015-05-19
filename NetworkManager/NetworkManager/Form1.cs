@@ -46,11 +46,14 @@ namespace NetworkManager
 
         private void button1_Click(object sender, EventArgs e)
         {
+            this.startService();
+            
+        }
 
-
+        private void startService()
+        {
             if (NetManager.startManager(config.ManagerPort))
                 afterStarted();
-            
         }
 
         private void afterStarted()

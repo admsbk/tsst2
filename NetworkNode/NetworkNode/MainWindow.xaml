@@ -12,7 +12,7 @@
                     </ScrollViewer>
                 </Grid>
             </TabItem>
-            <TabItem Header="Link" Height="22" VerticalAlignment="Top">
+            <TabItem Header="Cross Connection" Height="22" VerticalAlignment="Top">
                 <Grid Background="#FFE5E5E5">
                     <ListView x:Name="links" HorizontalAlignment="Left" Height="244" VerticalAlignment="Top" Width="352" SelectionChanged="links_SelectionChanged">
                         <ListView.View>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace NetworkNode
 {
 
-    class Link
+    class CrossConnection
     {
         public string ID { get; set; }
         public string src { get; set; }
@@ -15,7 +15,7 @@ namespace NetworkNode
         public string srcSlot { get; set; }
         public string dstSlot { get; set; }
 
-        public Link(string id, string src, string srcSlot, string dst, string dstSlot)
+        public CrossConnection(string id, string src, string srcSlot, string dst, string dstSlot)
         {
             this.ID = id;
             this.src = src;
