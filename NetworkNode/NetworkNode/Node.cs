@@ -18,17 +18,15 @@ namespace NetworkNode
         private Grid logs;
         private ListView links;
         private Config conf;
-
         private int messageNumber = 0;
         private int rIndex;
         private transportClient cloud;
         private transportClient manager;
         private networkLibrary.SwitchingBoxNode switchTable;
         private networkLibrary.SynchronousTransportModule[] STM;
-        private List<CrossConnection> linkList;
+        private List<CrossConnection> crossConnectionList;
         public transportClient.NewMsgHandler newMessageHandler { get; set; }
-        public transportClient.NewMsgHandler newOrderHandler { get; set; }
-        
+        public transportClient.NewMsgHandler newOrderHandler { get; set; }    
         string ManagerIP { get; set; }
         string ManagerPort { get; set; }
         string CloudIP { get; set; }
@@ -46,9 +44,10 @@ namespace NetworkNode
             this.mainWindow = mainWindow;
             rIndex = Grid.GetRow(logs);
             switchTable = new SwitchingBoxNode();
-            linkList = new List<CrossConnection>();
+            crossConnectionList = new List<CrossConnection>();
         }
 
+        #region sending messages
         private void startSending()
         {
             DispatcherTimer timer = new DispatcherTimer();
@@ -73,10 +72,10 @@ namespace NetworkNode
 
         private void newOrderRecived(object myObject, MessageArgs myArgs)
         {
-            string[] check = myArgs.Message.Split('%');
+            string[] check = myArgs.message.Split('%');
             if (check[0] == NodeId)
             {
-                addLog(logs, Constants.RECIVED_FROM_MANAGER + " " + myArgs.Message, Constants.LOG_INFO);
+                addLog(logs, Constants.RECEIVED_FROM_MANAGER + " " + myArgs.message, Constants.LOG_INFO);
                 if (check[1] == Constants.SET_LINK)
                     parseOrder(check[1] + "%" + check[2] + "%" + check[3]);
                 else if (check[1] == Constants.DELETE_LINK)
@@ -88,12 +87,12 @@ namespace NetworkNode
 
         private void newMessageRecived(object myObject, MessageArgs myArgs)
         {
-            addLog(logs, Constants.NEW_MSG_RECIVED + " " + myArgs.Message, Constants.LOG_INFO);
+            addLog(logs, Constants.NEW_MSG_RECEIVED + " " + myArgs.message, Constants.LOG_INFO);
 
-            string[] fromWho = myArgs.Message.Split('%');
+            string[] fromWho = myArgs.message.Split('%');
             if (fromWho[0].Contains("C"))
             {
-                string forwarded = switchTable.forwardMessage(myArgs.Message);
+                string forwarded = switchTable.forwardMessage(myArgs.message);
 
                 try
                 {
@@ -143,98 +142,7 @@ namespace NetworkNode
                 {
                     addLog(logs, Constants.INVALID_PORT, Constants.LOG_ERROR);
                 }
-            }
-
-            /*
-            string[] forwarded = switchTable.forwardMessage(myArgs.Message);
-            if (forwarded != null) //czyli nie przyszla pusta stmka
-            { 
-                foreach (string s in forwarded)
-                {
-                    if (s != null)
-                    {
-                        string[] msg = s.Split('&');
-                        string[] msg1 = msg[1].Split('^');
-
-                        if (s.Contains("CO"))
-                        {
-                            cloud.sendMessage(s);
-                            addLog(logs, Constants.FORWARD_MESSAGE + " " + s, Constants.LOG_INFO);
-                        }
-                        else
-                        {
-                            try
-                            {
-                                STM.ElementAt(portsOutTemp.IndexOf(msg[0])).reserveSlot(Convert.ToInt32(msg1[0]), msg1[1]);
-                                addLog(logs, "slot reserved ", Constants.LOG_INFO);
-                                addLog(logs, Constants.FORWARD_MESSAGE + " " + s, Constants.LOG_INFO);
-                            }
-                            catch
-                            {
-                                //addLog(logs, "slot reserved before/not empty", Constants.LOG_ERROR);
-                            }
-                        }
-                        
-                    }
-                }
-            }
-            else
-            {
-                addLog(logs, Constants.INVALID_PORT, Constants.LOG_ERROR);
-            }*/
-            
-        }
-
-        public void readConfig(string pathToConfig)
-        {
-            addLog(logs, pathToConfig, Constants.LOG_INFO);
-            try
-            {
-                conf = new Config(pathToConfig, Constants.node);
-                this.NodeId = conf.config[0];
-                this.CloudIP = conf.config[1];
-                this.CloudPort = conf.config[2];
-                this.ManagerIP = conf.config[3];
-                this.ManagerPort = conf.config[4];
-                this.portsInTemp = conf.portsIn;
-                this.portsOutTemp = conf.portsOut;
-
-               
-                foreach (string portIn in portsInTemp)
-                {
-
-                        Port tempPort = new Port(portIn);
-                        this.portsIn.Add(tempPort);
-
-                    
-                }
-
-                foreach (string portOut in portsOutTemp)
-                {
-
-                        Port tempPort = new Port(portOut);
-                        this.portsIn.Add(tempPort);
-
-                }
-                
-                this.mainWindow.Title = this.NodeId; 
-                addLog(logs, networkLibrary.Constants.CONFIG_OK, networkLibrary.Constants.LOG_INFO);
-
-                foreach (Port portIn in portsIn)
-                {
-                    addLog(logs,portIn.portID,Constants.TEXT);
-                }
-                foreach (Port portOut in portsOut)
-                {
-                    addLog(logs, portOut.portID, Constants.TEXT);
-                }
-            }
-
-            catch(Exception e)
-            {
-                addLog(logs, networkLibrary.Constants.CONFIG_ERROR, networkLibrary.Constants.LOG_ERROR);
-                System.Console.WriteLine(e);
-            }
+            }            
         }
 
         public void startService()
@@ -267,8 +175,6 @@ namespace NetworkNode
                 addLog(logs, Constants.SERVICE_START_ERROR, Constants.LOG_ERROR);
                 addLog(logs, Constants.CANNOT_CONNECT_TO_CLOUD, Constants.LOG_ERROR);
                 addLog(logs, Constants.CANNOT_CONNECT_TO_MANAGER, Constants.LOG_ERROR);
-
-                throw new Exception("zly start networknode");
             }
         }
 
@@ -291,18 +197,15 @@ namespace NetworkNode
                        
                             if (switchTable.addLink(parsed1[0], parsed1[1], parsed2[0], parsed2[1]))
                             {
-                                CrossConnection newLink = new CrossConnection(Convert.ToString(linkList.Count() + 1), parsed1[0], parsed1[1], parsed2[0], parsed2[1]);
-                                linkList.Add(newLink);
+                                CrossConnection newLink = new CrossConnection(Convert.ToString(crossConnectionList.Count() + 1), parsed1[0], parsed1[1], parsed2[0], parsed2[1]);
+                                crossConnectionList.Add(newLink);
 
                                 Application.Current.Dispatcher.Invoke((Action)(() =>
                                 {
                                     this.links.Items.Add(newLink);
-
-
                                 }));
                             }
-                            break;
-                        
+                            break;                   
                     }
                     
                     else
@@ -310,8 +213,8 @@ namespace NetworkNode
                         addLog(logs, Constants.NONEXISTENT_PORT, Constants.ERROR);
                         break;
                     }
-                case Constants.DELETE_LINK:
-                    
+
+                case Constants.DELETE_LINK:                    
                     if (parsed[1] == "*")
                     {
                         for (int i = links.Items.Count - 1; i >= 0; i--)
@@ -320,7 +223,7 @@ namespace NetworkNode
                             Application.Current.Dispatcher.Invoke((Action)(() =>
                             {
                                 links.Items.Remove(links.Items[i]);
-                                linkList.RemoveAt(i);
+                                crossConnectionList.RemoveAt(i);
                             }));
                         }
                         
@@ -332,18 +235,100 @@ namespace NetworkNode
                         switchTable.removeLink(parsedX[0],parsedX[1]);
                         for (int i = links.Items.Count - 1; i >= 0; i--)
                         {
-                            if (parsed[1] == linkList[i].src)
+                            if (parsed[1] == crossConnectionList[i].src)
                             {
                                 links.Items.Remove(i);
-                                linkList.RemoveAt(i);
+                                crossConnectionList.RemoveAt(i);
                             }
                             
                         }
                     }
                     break;
             }
-
         }
+
+        public void stopService()
+        {
+            if (cloud != null)
+            {
+                cloud.OnNewMessageRecived -= newMessageHandler;
+                manager.OnNewMessageRecived -= newOrderHandler;
+                newMessageHandler = null;
+                newOrderHandler = null;
+                cloud.stopService();
+                cloud = null;
+                manager.stopService();
+                manager = null;
+            }
+        }
+
+        public bool ifContains(string portID, string slot, List<Port> list)
+        {
+            foreach (Port portTemp in list)
+            {
+                if (portTemp.portID == portID)
+                {
+                    if (portTemp.portID.Contains("C"))
+                        return true;
+                    else if (portTemp.slots.Contains(slot))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+#endregion
+
+        #region pomoc
+        public void readConfig(string pathToConfig)
+        {
+            addLog(logs, pathToConfig, Constants.LOG_INFO);
+            try
+            {
+                conf = new Config(pathToConfig, Constants.node);
+                this.NodeId = conf.config[0];
+                this.CloudIP = conf.config[1];
+                this.CloudPort = conf.config[2];
+                this.ManagerIP = conf.config[3];
+                this.ManagerPort = conf.config[4];
+                this.portsInTemp = conf.portsIn;
+                this.portsOutTemp = conf.portsOut;
+
+
+                foreach (string portIn in portsInTemp)
+                {
+                    Port tempPort = new Port(portIn);
+                    this.portsIn.Add(tempPort);
+                }
+
+                foreach (string portOut in portsOutTemp)
+                {
+                    Port tempPort = new Port(portOut);
+                    this.portsIn.Add(tempPort);
+                }
+
+                this.mainWindow.Title = this.NodeId;
+                addLog(logs, networkLibrary.Constants.CONFIG_OK, networkLibrary.Constants.LOG_INFO);
+
+                foreach (Port portIn in portsIn)
+                {
+                    addLog(logs, portIn.portID, Constants.TEXT);
+                }
+                foreach (Port portOut in portsOut)
+                {
+                    addLog(logs, portOut.portID, Constants.TEXT);
+                }
+            }
+
+            catch (Exception e)
+            {
+                addLog(logs, networkLibrary.Constants.CONFIG_ERROR, networkLibrary.Constants.LOG_ERROR);
+                System.Console.WriteLine(e);
+            }
+        }
+
         private void addLog(Grid log, string message, int logType)
         {
             var color = Brushes.Black;
@@ -375,38 +360,6 @@ namespace NetworkNode
                      })
                  );
         }
-        public void stopService()
-        {
-            if (cloud != null)
-            {
-                cloud.OnNewMessageRecived -= newMessageHandler;
-                manager.OnNewMessageRecived -= newOrderHandler;
-                newMessageHandler = null;
-                newOrderHandler = null;
-                cloud.stopService();
-                cloud = null;
-                manager.stopService();
-                manager = null;
-            }
-        }
-
-        public bool ifContains(string portID, string slot,List<Port> list)
-        {
-            foreach (Port portTemp in list)
-            {
-                if (portTemp.portID == portID)
-                {
-                   if (portTemp.portID.Contains("C"))
-                       return true;
-                   else if (portTemp.slots.Contains(slot))
-                   {
-                        return true;
-                   }
-                }
-            }
-
-            return false;
-        }
-
+        #endregion
     }
 }

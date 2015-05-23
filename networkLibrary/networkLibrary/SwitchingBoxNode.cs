@@ -67,7 +67,6 @@ namespace networkLibrary
 
         public void removeAllLinks()
         {
-
             this.SwitchingTable.Clear();
         }
     }

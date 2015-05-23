@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Cloud
 {
-    class Link
+    class CrossConnection
     {
         public string ID { get; set; }
         public string Source { get; set; }
@@ -14,9 +14,9 @@ namespace Cloud
         public string srcPort { get; set; }
         public string DstPort { get; set; }
 
-        public Link(String linkID, String nodeIn, String nodeOut, String portIn, String portOut)
+        public CrossConnection(String CrossConnectionID, String nodeIn, String nodeOut, String portIn, String portOut)
         {
-            this.ID = linkID;
+            this.ID = CrossConnectionID;
             this.Source = nodeIn;
             this.dst = nodeOut;
             this.srcPort = portIn;

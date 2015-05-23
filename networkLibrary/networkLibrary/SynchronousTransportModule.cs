@@ -16,8 +16,6 @@ namespace networkLibrary
         {
             this.size = size;
             slot = new string[size];
-
-
         }
 
         public string prepareToSend()
@@ -45,7 +43,6 @@ namespace networkLibrary
         public void clearSTM()
         {
             slot = new string[size];
-
         }
 
         public static string[] getSlots(string message) 
@@ -61,9 +58,7 @@ namespace networkLibrary
                 if (flag)
                     return splitted;
                 else
-                    return null;
-        
+                    return null;       
         }
-
     }
 }

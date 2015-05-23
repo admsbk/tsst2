@@ -45,8 +45,6 @@ namespace networkLibrary
                 stream = client.GetStream();
                 clientThread = new Thread(new ThreadStart(ListenForMessage));
                 clientThread.Start();
-                //sendMessage("say hello");
-
             }
             else
             {
@@ -86,7 +84,6 @@ namespace networkLibrary
                 {
                     var args = new MessageArgs("Disconnected from cloud");
                     OnNewSignalization(this, args);
-
                     client.GetStream().Close();
                     client.Close();
                     client = null;
@@ -98,15 +95,13 @@ namespace networkLibrary
                     Console.WriteLine("Exception in disconnecting from cloud");
                 }
             }
-
         }
 
         public void sendMessage(string msg)
         {
                 byte[] buffer = encoder.GetBytes(msg);
                 stream.Write(buffer, 0, buffer.Length);
-                stream.Flush();
-        
+                stream.Flush();     
         }
 
         public bool isConnected()
@@ -121,13 +116,11 @@ namespace networkLibrary
             }
         }
 
-
         public void stopService()
         {
             client.GetStream().Close();
             client.Close();
             clientThread.Join();
         }
-
     }
 }
