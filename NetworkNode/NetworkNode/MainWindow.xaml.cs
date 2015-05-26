@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Windows.Forms;
 
 namespace NetworkNode
 {
@@ -37,6 +38,8 @@ namespace NetworkNode
             {
                 pathToConfig = @"" + conf;
                 node.readConfig(pathToConfig);
+                node.startService();
+                this.startButton.IsEnabled = false;
             }
 
 
@@ -70,11 +73,9 @@ namespace NetworkNode
             }
         }
         private void About_Click(object sender, EventArgs e)
-        {
-            /*
+        {       
             AboutAuthors about = new AboutAuthors();
-            about.ShowDialog();
-            */
+            about.ShowDialog();          
         }
         private void Exit_Click(object sender, EventArgs e)
         {

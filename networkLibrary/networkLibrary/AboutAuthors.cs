@@ -22,6 +22,7 @@ namespace networkLibrary
             this.textBoxDescription.Text = "Description: " +Environment.NewLine +
                 "@Authors: Karolak Artur & Skwarek Marcin " + Environment.NewLine + 
                 "                  & Smolen Maciej & Sobkowiak Adam" +
+                Environment.NewLine + "Thanks to K. Powojski" +
                 Environment.NewLine + Environment.NewLine + "All rights reserved";
         }
 

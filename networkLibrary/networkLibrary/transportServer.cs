@@ -161,14 +161,14 @@ namespace networkLibrary
                     serverSocket.Stop();
                     
                     if (serverThread.IsAlive)
-                    { serverThread.Abort(); }
+                    { serverThread.Join(); }
                 }
                 catch
                 {
                     Console.WriteLine("Unable to stop");
                 }
             }
-                    
+            serverThread.Join();     
             serverSocket = null;
             serverThread = null;
         }

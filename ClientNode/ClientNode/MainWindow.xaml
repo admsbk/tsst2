@@ -5,7 +5,7 @@
         Icon = "./icon.ico">
 
     <Grid>
-        <GroupBox Header="Chat" HorizontalAlignment="Left" Height="196" Margin="10,137,0,0" VerticalAlignment="Top" Width="320">
+        <GroupBox x:Name="chatBox" Header="Chat" HorizontalAlignment="Left" Height="196" Margin="10,137,0,0" VerticalAlignment="Top" Width="320" IsEnabled="False">
             <Grid HorizontalAlignment="Left" Height="182" VerticalAlignment="Top"
 		            Width="310" Margin="0,0,-2,0">
                 <Button x:Name="Button_1" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,152,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
@@ -15,7 +15,13 @@
                 </ScrollViewer>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Call" HorizontalAlignment="Left" Height="46" Margin="10,86,0,0" VerticalAlignment="Top" Width="320"/>
+        <GroupBox Header="Call" HorizontalAlignment="Left" Height="46" Margin="10,86,0,0" VerticalAlignment="Top" Width="320">
+            <Grid HorizontalAlignment="Left" Height="182" VerticalAlignment="Top"
+		            Width="310" Margin="0,0,-2,0">
+                <TextBox x:Name="CallName" HorizontalAlignment="Left" Height="23" Margin="10,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="157" RenderTransformOrigin="0.133,-1"/>
+                <Button x:Name="CallingButton" Content="Call" HorizontalAlignment="Left" Height="23" Margin="175,0,0,0" VerticalAlignment="Top" Width="129" RenderTransformOrigin="0.587,0.517" Click="CallingButton_Click"/>
+            </Grid>
+        </GroupBox>
         <GroupBox Header="Setup" HorizontalAlignment="Left" Height="49" Margin="10,32,0,0" VerticalAlignment="Top" Width="168">
             <Button x:Name="ConnectButton" Content="Connect to Cloud" HorizontalAlignment="Left" Height="26" Margin="10,0,0,0" VerticalAlignment="Top" Width="139" Click="Button_Click"/>
         </GroupBox>

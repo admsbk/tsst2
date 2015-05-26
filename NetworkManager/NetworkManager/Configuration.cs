@@ -7,6 +7,11 @@ using System.Xml;
 
 namespace NetworkManager
 {
+    public static class path
+    {
+        public static string pathToFile { get; set; }
+    }
+
     class Configuration
     {
         private string managerId;

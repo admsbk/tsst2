@@ -8,8 +8,6 @@ using System.Net.Sockets;
 using System.Windows.Forms;
 using networkLibrary;
 
-
-
 namespace NetworkManager
 {
     class Manager
@@ -33,7 +31,7 @@ namespace NetworkManager
                 server = new transportServer(port);
                 clientHandler = new transportServer.NewClientHandler(newClientRequest);
                 server.OnNewClientRequest += clientHandler;
-                logs.addLogFromOutside(Constants.MANAGER_STARTED, true, Constants.INFO);
+                //logs.addLogFromOutside(Constants.MANAGER_STARTED, true, Constants.INFO);
                 return true;
             }
             catch
@@ -52,18 +50,15 @@ namespace NetworkManager
         {
             try
             {
-                foreach (TcpClient client in server.clientSocket)
-                {
-                    server.endConnection(client);
-                }
 
                 server.OnNewClientRequest -= clientHandler;
                 clientHandler = null;
                 server.stopServer();
-                server = null;
+                //server = null;
             }
             catch
             {
+                GC.Collect();
                 logs.addLogFromOutside("Problems with disconnecting", true, Constants.LOG_ERROR);
             }
         }

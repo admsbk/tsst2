@@ -1,4 +1,5 @@
-﻿using System;
+﻿using networkLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Windows.Forms;
 
 namespace ClientNode
 {
@@ -35,6 +37,7 @@ namespace ClientNode
             {
                 pathToConfig = @""+conf;
                 client.readConfig(pathToConfig);
+                startService();
             }
 
         }
@@ -55,6 +58,11 @@ namespace ClientNode
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            startService();           
+        }
+
+        private void startService()
+        {
             client.startService();
             if (client.isStarted())
             {
@@ -63,7 +71,6 @@ namespace ClientNode
                 Button_1.IsEnabled = true;
                 this.statusBar.Foreground = Brushes.Green;
             }
-            
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -85,10 +92,10 @@ namespace ClientNode
             }
         }
         private void About_Click(object sender, EventArgs e)
-        {/*
+        {
             AboutAuthors about = new AboutAuthors();
             about.ShowDialog();
-            */
+            
         }
         private void Exit_Click(object sender, EventArgs e)
         {
@@ -98,8 +105,17 @@ namespace ClientNode
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-
             client.stopService();
+        }
+
+        private void CallingButton_Click(object sender, RoutedEventArgs e)
+        {
+            string callingName = this.CallName.Text;
+
+            //Proba polaczenia (tylko do kogo? NM?)
+
+            this.chatBox.IsEnabled = true;
+            this.Button_1.IsEnabled = true;
         }
 
     }

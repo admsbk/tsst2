@@ -55,7 +55,6 @@ namespace Cloud
         }
         private void startService()
         {
-
             try
             {
                 cloud.startService();
