@@ -48,10 +48,10 @@ namespace NetworkNode
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             try
-            {
-                
+            {           
                 node.startService();
-                this.startButton.IsEnabled = false;
+                if(node.isConnected())
+                    this.startButton.IsEnabled = false;
             }
 
             catch

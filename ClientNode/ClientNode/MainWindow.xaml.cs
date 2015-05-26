@@ -64,13 +64,7 @@ namespace ClientNode
         private void startService()
         {
             client.startService();
-            if (client.isStarted())
-            {
-                this.ConnectButton.IsEnabled = false;
-                this.statusBar.Text = "Connected";
-                Button_1.IsEnabled = true;
-                this.statusBar.Foreground = Brushes.Green;
-            }
+            
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

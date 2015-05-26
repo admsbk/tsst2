@@ -65,13 +65,23 @@ namespace ClientNode
         private void newSignalization(object a, MessageArgs e)
         {
             displayStatusMessage(e.message, Constants.LOG_ERROR);
+            this.mainWindow.Dispatcher.Invoke(
+                System.Windows.Threading.DispatcherPriority.Normal,
+                new Action(() =>
+                {
+                    this.mainWindow.ConnectButton.IsEnabled = true;
+                    this.mainWindow.statusBar.Text = "Disonnected";
+                    this.mainWindow.Button_1.IsEnabled = false;
+                    this.mainWindow.statusBar.Foreground = Brushes.Red;
+                })
+            );
         }
         private void newMessageRecived(object a, MessageArgs e)
         {
             string message;
             try
             {
-                displayStatusMessage(e.message, Constants.LOG_ERROR);
+                //displayStatusMessage(e.message, Constants.LOG_ERROR);
                 message = e.message.Split('&')[1];
                 string dispMessage = message.Split('^')[1];
                 addChatMessage(dispMessage, Constants.RIGHT);
@@ -99,6 +109,14 @@ namespace ClientNode
             catch
             {
                 displayStatusMessage(Constants.SERVICE_START_ERROR, Constants.LOG_ERROR);
+            }
+
+            if (this.isStarted())
+            {
+                this.mainWindow.ConnectButton.IsEnabled = false;
+                this.mainWindow.statusBar.Text = "Connected";
+                this.mainWindow.Button_1.IsEnabled = true;
+                this.mainWindow.statusBar.Foreground = Brushes.Green;
             }
         }
 
@@ -131,8 +149,10 @@ namespace ClientNode
 
         public bool isStarted()
         {
-            if (client != null ){ return true; }
-            else{ return false; }
+            if (client != null)
+                return client.isConnected();
+            else
+                return false;
         }
         #endregion
 

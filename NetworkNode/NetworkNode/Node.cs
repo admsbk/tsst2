@@ -26,7 +26,8 @@ namespace NetworkNode
         private networkLibrary.SynchronousTransportModule[] STM;
         private List<CrossConnection> crossConnectionList;
         public transportClient.NewMsgHandler newMessageHandler { get; set; }
-        public transportClient.NewMsgHandler newOrderHandler { get; set; }    
+        public transportClient.NewMsgHandler newOrderHandler { get; set; }
+        private transportClient.NewSignalization signHandler { get; set; }
         string ManagerIP { get; set; }
         string ManagerPort { get; set; }
         string CloudIP { get; set; }
@@ -145,19 +146,42 @@ namespace NetworkNode
             }            
         }
 
+        private void newSignalization(object a, MessageArgs e)
+        {
+            addLog(logs, e.message, Constants.LOG_ERROR);
+            this.mainWindow.Dispatcher.Invoke(
+                System.Windows.Threading.DispatcherPriority.Normal,
+                new Action(() =>
+                {
+                    this.mainWindow.startButton.IsEnabled = true;
+                })
+            );
+            cloud.OnNewMessageRecived -= newMessageHandler;
+            cloud.OnNewSignalization -= signHandler;
+            newMessageHandler = null;
+            signHandler = null;
+            cloud.stopService();
+            cloud = null;
+            
+        }
+
+        public bool isConnected()
+        {
+            return cloud.isConnected();
+        }
+
         public void startService()
         {
             try
             {
+               
                 cloud = new transportClient(CloudIP, CloudPort);
                 newMessageHandler = new transportClient.NewMsgHandler(newMessageRecived);
+                signHandler = new transportClient.NewSignalization(newSignalization);
+                cloud.OnNewSignalization += signHandler;
                 cloud.OnNewMessageRecived += newMessageHandler;
 
-                manager = new transportClient(ManagerIP, ManagerPort);
-                newOrderHandler = new transportClient.NewMsgHandler(newOrderRecived);
-                manager.OnNewMessageRecived += newOrderHandler;
-
-                cloud.sendMessage(this.NodeId+"#");
+                cloud.sendMessage(this.NodeId + "#");
 
                 addLog(logs, Constants.SERVICE_START_OK, Constants.LOG_INFO);
 
@@ -168,13 +192,23 @@ namespace NetworkNode
                 }
 
                 startSending();
-                
+
+                manager = new transportClient(ManagerIP, ManagerPort);
+                newOrderHandler = new transportClient.NewMsgHandler(newOrderRecived);
+                manager.OnNewMessageRecived += newOrderHandler;
+                             
             }
             catch
             {
                 addLog(logs, Constants.SERVICE_START_ERROR, Constants.LOG_ERROR);
-                addLog(logs, Constants.CANNOT_CONNECT_TO_CLOUD, Constants.LOG_ERROR);
-                addLog(logs, Constants.CANNOT_CONNECT_TO_MANAGER, Constants.LOG_ERROR);
+                if(cloud==null)
+                    addLog(logs, Constants.CANNOT_CONNECT_TO_CLOUD, Constants.LOG_ERROR);
+                else if(!cloud.isConnected())
+                    addLog(logs, Constants.CANNOT_CONNECT_TO_CLOUD, Constants.LOG_ERROR);
+                if(manager==null)
+                    addLog(logs, Constants.CANNOT_CONNECT_TO_MANAGER, Constants.LOG_ERROR);
+                else if(!manager.isConnected())
+                    addLog(logs, Constants.CANNOT_CONNECT_TO_MANAGER, Constants.LOG_ERROR);
             }
         }
 
@@ -252,7 +286,9 @@ namespace NetworkNode
             if (cloud != null)
             {
                 cloud.OnNewMessageRecived -= newMessageHandler;
+                cloud.OnNewSignalization -= signHandler;
                 manager.OnNewMessageRecived -= newOrderHandler;
+                signHandler = null;
                 newMessageHandler = null;
                 newOrderHandler = null;
                 cloud.stopService();

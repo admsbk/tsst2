@@ -57,6 +57,7 @@ namespace networkLibrary
                     break;
                 }
             }
+            
         }
 
         protected void ListenForMessage(object client)
@@ -139,38 +140,42 @@ namespace networkLibrary
         }
 
         public void stopServer()
-        {          
+        {
+            //serverThread.Abort();
+            //serverThread.Interrupt();
+            //serverThread.Join();  
+
             foreach (TcpClient client in clientSocket)
             {
                 try
                 {
                     client.GetStream().Close();
                     client.Close();
-                    clientSocket.Remove(client);
+                    //clientSocket.Remove(client);
                 }
                 catch
                 {
                     Console.WriteLine("Problems with disconnecting clients from cloud");
                 }
             }
+            clientSocket.Clear();
 
             if (serverSocket != null)
             {
                 try
                 {
-                    serverSocket.Stop();
                     
-                    if (serverThread.IsAlive)
-                    { serverThread.Join(); }
+                    serverSocket.Stop();
+
                 }
                 catch
                 {
                     Console.WriteLine("Unable to stop");
                 }
             }
-            serverThread.Join();     
+            serverThread = null; 
             serverSocket = null;
-            serverThread = null;
+            
         }
 
         public void sendMessage(TcpClient client, string msg)
