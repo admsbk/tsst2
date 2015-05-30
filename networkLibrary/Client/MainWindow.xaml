@@ -61,6 +61,18 @@
                     </ListView>
                 </Grid>
             </TabItem>
+            <TabItem x:Name="signalization" Header="Sign Network">
+                <Grid Background="#FFE5E5E5">
+                    <ListView x:Name="signalizationNetwork" HorizontalAlignment="Left" Height="232" VerticalAlignment="Top" Width="366" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Width="60" Header="ID"/>
+                                <GridViewColumn Width="120" Header="Name"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
         </TabControl>
         <Menu HorizontalAlignment="Left" Height="27" Margin="0,-25,0,0" VerticalAlignment="Top" Width="392" Grid.ColumnSpan="2">
             <MenuItem Header="_General">
