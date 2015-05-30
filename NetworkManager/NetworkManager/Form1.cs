@@ -17,7 +17,6 @@ namespace NetworkManager
         private List<string> previousCommands;
         private int commandListPos;
         private Configuration config;
-        private bool confLoaded = false;
 
         private Manager NetManager;
         private Logs logs;
@@ -35,40 +34,42 @@ namespace NetworkManager
             config = new Configuration(this.logs);
             Start.Enabled = true;
 
-            if (confLoaded == false)
+            if (path.pathToFile != null)
             {
-                var path = @"Config/ManagerConfig.xml";
-                config.loadConfiguration(path);
+                config.loadConfiguration(path.pathToFile);
                 afterConfiguration();
+                startService();
             }
-            
+      
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.startService();
-            
+                this.startService(); 
         }
 
         private void startService()
         {
-            if (NetManager.startManager(config.ManagerPort))
+            bool canStart = NetManager.startManager(config.ManagerPort);
+            if (canStart)
                 afterStarted();
+            
         }
 
         private void afterStarted()
         {
-
             Start.Enabled = false;
             SendToAll.Enabled = true;
             LoadConfigurationButton.Enabled = false;
             LoadCommandScript.Enabled = true;
-
+            this.logs.addLog("Service started ok", true, networkLibrary.Constants.LOG_INFO);
         }
+
         private void afterConfiguration()
         {
             Start.Enabled = true;
             NetManager = new Manager(logs);
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -89,10 +90,12 @@ namespace NetworkManager
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            NetManager.stopManager();
+            if(NetManager!=null)
+            {
+                NetManager.stopManager();
+            }
             base.OnFormClosing(e);
             
-                
         }
 
         private void Logs_SelectedIndexChanged(object sender, EventArgs e)

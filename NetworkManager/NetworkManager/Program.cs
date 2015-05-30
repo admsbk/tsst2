@@ -13,8 +13,13 @@ namespace NetworkManager
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            try
+            {
+                path.pathToFile = args[0];
+            }
+            catch { }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

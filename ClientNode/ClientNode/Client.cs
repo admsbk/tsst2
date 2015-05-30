@@ -30,19 +30,69 @@ namespace ClientNode
         private transportClient.NewMsgHandler messageHandler { get; set; }
         private transportClient.NewSignalization signHandler { get; set; }
 
-
         public Client(Grid chat, TextBlock status, MainWindow mainWindow)
         {
             this.chat = chat;
             this.status = status;
             this.mainWindow = mainWindow;
-
             this.chat = chat;
             this.status = status;
             rIndex = Grid.GetRow(chat);
         }
 
+        public void readConfig(string path)
+        {
+            try
+            {
+                conf = new Config(path, Constants.Client);
+                this.nodeName = conf.config[0];
+                this.CloudIP = conf.config[1];
+                this.CloudPort = conf.config[2];
+                this.name = conf.config[3];
+                this.portsIn = conf.portsIn;
+                this.portsOut = conf.portsOut;
 
+                mainWindow.Title = "Client " + this.name;
+                displayStatusMessage(Constants.CONFIG_OK, Constants.LOG_INFO);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+                displayStatusMessage(Constants.CONFIG_ERROR + "...", Constants.LOG_ERROR);
+                displayStatusMessage(" from " + path + "...", Constants.LOG_ERROR);
+            }
+        }
+        private void newSignalization(object a, MessageArgs e)
+        {
+            displayStatusMessage(e.message, Constants.LOG_ERROR);
+            this.mainWindow.Dispatcher.Invoke(
+                System.Windows.Threading.DispatcherPriority.Normal,
+                new Action(() =>
+                {
+                    this.mainWindow.ConnectButton.IsEnabled = true;
+                    this.mainWindow.statusBar.Text = "Disonnected";
+                    this.mainWindow.Button_1.IsEnabled = false;
+                    this.mainWindow.statusBar.Foreground = Brushes.Red;
+                })
+            );
+        }
+        private void newMessageRecived(object a, MessageArgs e)
+        {
+            string message;
+            try
+            {
+                //displayStatusMessage(e.message, Constants.LOG_ERROR);
+                message = e.message.Split('&')[1];
+                string dispMessage = message.Split('^')[1];
+                addChatMessage(dispMessage, Constants.RIGHT);
+            }
+            catch
+            {
+                addChatMessage(e.message, Constants.RIGHT);
+            }
+        }
+
+        #region serverOptions
         public void startService()
         {
             try
@@ -59,65 +109,31 @@ namespace ClientNode
             catch
             {
                 displayStatusMessage(Constants.SERVICE_START_ERROR, Constants.LOG_ERROR);
+            }
 
+            if (this.isStarted())
+            {
+                this.mainWindow.ConnectButton.IsEnabled = false;
+                this.mainWindow.statusBar.Text = "Connected";
+                this.mainWindow.Button_1.IsEnabled = true;
+                this.mainWindow.statusBar.Foreground = Brushes.Green;
             }
         }
 
-        public bool isStarted()
-        {
-            if (client != null )
-            {
-                return true;
-            }
-
-            else
-            {
-                return false;
-            }
-        }
-
-        public void readConfig(string path)
+        public void stopService()
         {
             try
             {
-                conf = new Config(path, Constants.Client);
-                this.nodeName = conf.config[0];
-                this.CloudIP = conf.config[1];
-                this.CloudPort = conf.config[2];
-                this.name = conf.config[3];
-                this.portsIn = conf.portsIn;
-                this.portsOut= conf.portsOut;
-
-
-                mainWindow.Title = "Client " + this.name;
-                displayStatusMessage(Constants.CONFIG_OK, Constants.LOG_INFO);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.StackTrace);
-                displayStatusMessage(Constants.CONFIG_ERROR + "...", Constants.LOG_ERROR);
-                displayStatusMessage(" from "+path + "...", Constants.LOG_ERROR);
-
-                displayStatusMessage(Constants.CONFIG_ERROR + "...", Constants.LOG_ERROR);
-            }
-        }
-        private void newSignalization(object a, MessageArgs e)
-        {
-            displayStatusMessage(e.Message, Constants.LOG_ERROR);
-        }
-        private void newMessageRecived(object a, MessageArgs e)
-        {
-            string message;
-            try
-            {
-                displayStatusMessage(e.Message, Constants.LOG_ERROR);
-                message = e.Message.Split('&')[1];
-                string dispMessage = message.Split('^')[1];
-                addChatMessage(dispMessage, Constants.RIGHT);
+                client.OnNewMessageRecived -= messageHandler;
+                client.OnNewSignalization -= signHandler;
+                messageHandler = null;
+                signHandler = null;
+                client.stopService();
+                client = null;
             }
             catch
             {
-                addChatMessage(e.Message, Constants.RIGHT);
+
             }
         }
 
@@ -125,12 +141,22 @@ namespace ClientNode
         {
             try
             {
-                client.sendMessage(this.portsOut[0] + "&" + msg+"/");
+                client.sendMessage(this.portsOut[0] + "&" + msg + "/");
                 addChatMessage(msg, Constants.LEFT);
             }
             catch { }
         }
 
+        public bool isStarted()
+        {
+            if (client != null)
+                return client.isConnected();
+            else
+                return false;
+        }
+        #endregion
+
+        #region Frontend
         private void displayStatusMessage(string message, int type)
         {
             var color = Brushes.Black;
@@ -189,25 +215,6 @@ namespace ClientNode
                 })
             );
         }
-
-        public void stopService()
-        {
-            try
-            {
-                client.OnNewMessageRecived -= messageHandler;
-                client.OnNewSignalization -= signHandler;
-                messageHandler = null;
-                signHandler = null;
-                client.stopService();
-                client = null;
-            }
-            catch
-            {
-                
-            }
-        }
-
-
-
+        #endregion
     }
 }

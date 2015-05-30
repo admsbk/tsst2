@@ -38,9 +38,9 @@ namespace Cloud
             this.logs = logs;
             this.nodes = nodes;
             this.switchBox = new SwitchingBox();
-
         }
 
+        #region CloudServer
         public void startService()
         {
             try
@@ -60,80 +60,106 @@ namespace Cloud
                 {
                     addLog(this.logs, Constants.SERVICE_START_ERROR, Constants.LOG_ERROR);
                 }
-                
-
             }
             catch
             {
                 addLog(this.logs, Constants.SERVICE_START_ERROR, Constants.LOG_ERROR);
             }
         }
+        public void stopServer()
+        {
+            foreach (KeyValuePair<string, TcpClient> entry in clientSockets)
+            {
+                server.endConnection(entry.Value);
+            }
+
+            server.OnNewClientRequest -= reqListener;
+            server.OnNewMessageRecived -= msgListener;
+            reqListener = null;
+            msgListener = null;
+            server.stopServer();
+            server = null;
+        }
+
+        public bool isStarted()
+        {
+            if (server != null)
+            {
+                return server.isStarted();
+            }
+            else
+            {
+                return false;
+            }
+        }
+#endregion
+
         private void newClientRequest(object a, ClientArgs e)
         {
 
         }
 
+        //mozna to przerobic na jakies bardziej obiektowe
         private void newMessageRecived(object a, MessageArgs e)
         {
             
-            if(e.Message.Contains("COP"))
+            if(e.message.Contains("COP"))
             {
                 string getSenderId = clientSockets.FirstOrDefault(x => x.Value == e.ID).Key;
-                addLog(this.logs, Constants.NEW_MSG_RECIVED + " from " + getSenderId + " " + e.Message, Constants.LOG_INFO);
+                addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
                     try
                     {
-                        string[] msg = e.Message.Split('^');
-                        string forwarded = switchBox.forwardMessage(getSenderId +"%"+msg[0]+ "&" + e.Message);
+                        string[] msg = e.message.Split('^');
+                        string forwarded = switchBox.forwardMessage(getSenderId +"%"+msg[0]+ "&" + e.message);
                         string[] getNextNode = forwarded.Split('%');
                         server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + getNextNode[1] + msg[1].Split('&')[1]);
                         addLog(this.logs, Constants.FORWARD_MESSAGE + " " + forwarded, Constants.LOG_INFO);
                     }
                     catch
                     {
-                        addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.Message), Constants.LOG_ERROR);
+                        addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.message), Constants.LOG_ERROR);
                     }
             }
             
-            else if (e.Message.Split('#').Length == 1 && e.Message.Split('/').Length != 2)
+            else if (e.message.Split('#').Length == 1 && e.message.Split('/').Length != 2)
             {
                 //string[] getSenderId = e.Message.Split('%');
                 string getSenderId = clientSockets.FirstOrDefault(x => x.Value == e.ID).Key;
-                if (e.Message.Split(':').Length > 1)
+                if (e.message.Split(':').Length > 1)
                 {
-                addLog(this.logs, Constants.NEW_MSG_RECIVED + " from " + getSenderId + " " + e.Message, Constants.LOG_INFO);
+                addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
                     try
                     {
-                        string forwarded = switchBox.forwardMessage(getSenderId + "%" + e.Message);
+                        string forwarded = switchBox.forwardMessage(getSenderId + "%" + e.message);
                         string[] getNextNode = forwarded.Split('%');
                         server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + getNextNode[1]);
                         addLog(this.logs, Constants.FORWARD_MESSAGE + " " + forwarded, Constants.LOG_INFO);
                     }
                     catch
                     {
-                        addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.Message), Constants.LOG_ERROR);
+                        addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.message), Constants.LOG_ERROR);
                     }
                 }
                                
             }
-
-            
-            else if (e.Message.Split('#').Length == 1 && e.Message.Split('/').Length == 2)
+         
+            else if (e.message.Split('#').Length == 1 && e.message.Split('/').Length == 2)
             {
                 string getSenderId = clientSockets.FirstOrDefault(x => x.Value == e.ID).Key;
-                string[] receivedSlots = SynchronousTransportModule.getSlots(e.Message.Split('/')[0]);
+                string[] receivedSlots = SynchronousTransportModule.getSlots(e.message.Split('/')[0]);
                 if (receivedSlots != null)
                 {
-                    addLog(this.logs, Constants.NEW_MSG_RECIVED + " from " + getSenderId + " " + e.Message, Constants.LOG_INFO);
+                    addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
                     try
                     {
-                        string forwarded = switchBox.forwardMessage(getSenderId + "%" + e.Message);
+                        string forwarded = switchBox.forwardMessage(getSenderId + "%" + e.message);
                         string[] getNextNode = forwarded.Split('%');
                         server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + getNextNode[1]);
                         addLog(this.logs, Constants.FORWARD_MESSAGE + " " + forwarded, Constants.LOG_INFO);
                     }
                     catch
                     {
-                        addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.Message), Constants.LOG_ERROR);
+                        addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.message), Constants.LOG_ERROR);
                     }
                 }
             }
@@ -141,27 +167,26 @@ namespace Cloud
             {
                 try
                 {
-                    if (clientSockets.Keys.Contains(e.Message.Split('#')[0]))
+                    if (clientSockets.Keys.Contains(e.message.Split('#')[0]))
                     {
-                        bool isConnected = clientSockets[(e.Message.Split('#')[0])].Connected;
+                        bool isConnected = clientSockets[(e.message.Split('#')[0])].Connected;
                         if (!isConnected)
                         {
-                            clientSockets.Remove(e.Message.Split('#')[0]);
-                            clientSockets.Add(e.Message.Split('#')[0], e.ID);
-                            addLog(this.logs, Constants.NEW_CLIENT_LOG + " " + e.Message.Split('#')[0], Constants.LOG_INFO);
+                            clientSockets.Remove(e.message.Split('#')[0]);
+                            clientSockets.Add(e.message.Split('#')[0], e.ID);
+                            addLog(this.logs, Constants.NEW_CLIENT_LOG + " " + e.message.Split('#')[0], Constants.LOG_INFO);
                         }
                     }
                     else
                     {
-                        clientSockets.Add(e.Message.Split('#')[0], e.ID);
-                        addLog(this.logs, Constants.NEW_CLIENT_LOG + " " + e.Message.Split('#')[0], Constants.LOG_INFO);
+                        clientSockets.Add(e.message.Split('#')[0], e.ID);
+                        addLog(this.logs, Constants.NEW_CLIENT_LOG + " " + e.message.Split('#')[0], Constants.LOG_INFO);
                     }
                 }
                 catch
                 {
-                    addLog(this.logs, Constants.ALREADY_CONNECTED + " " + e.Message.Split('#')[0], Constants.LOG_ERROR);
+                    addLog(this.logs, Constants.ALREADY_CONNECTED + " " + e.message.Split('#')[0], Constants.LOG_ERROR);
                 }
-
             }
         }
 
@@ -179,7 +204,7 @@ namespace Cloud
                     this.switchBox.addLink(entry.Key, entry.Value);
                     string[] keyItem = entry.Key.Split('%');
                     string[] valueItem = entry.Value.Split('%');
-                    links.Items.Add(new Link(Convert.ToString(linkNum), keyItem[0], keyItem[1],
+                    links.Items.Add(new CrossConnection(Convert.ToString(linkNum), keyItem[0], keyItem[1],
                                                 valueItem[0], valueItem[1]));
                     linkNum++;
                 }
@@ -191,20 +216,6 @@ namespace Cloud
                 addLog(logs, networkLibrary.Constants.CONFIG_ERROR, networkLibrary.Constants.LOG_ERROR);
                 Console.WriteLine(e.StackTrace);
             }
-        }
-
-        public void stopServer(){
-            foreach(KeyValuePair<string, TcpClient> entry in clientSockets)
-            {
-                server.endConnection(entry.Value);
-            }
-
-            server.OnNewClientRequest -= reqListener;
-            server.OnNewMessageRecived -= msgListener;
-            reqListener=null;
-            msgListener=null;
-            server.stopServer();
-            server = null;
         }
 
         private void addLog(Grid log, string message, int logType)
@@ -238,18 +249,6 @@ namespace Cloud
 
                      })
                  );
-        }
-
-        public bool isStarted()
-        {
-            if (server != null)
-            {
-                return server.isStarted();
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

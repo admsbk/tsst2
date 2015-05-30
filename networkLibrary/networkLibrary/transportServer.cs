@@ -18,8 +18,6 @@ namespace networkLibrary
         //private Dictionary<TcpClient, string> clientSockets = new Dictionary<TcpClient, string>();
         public List<TcpClient> clientSocket;
 
-
-
         public transportServer(int port)
         {
             this.encoder = new ASCIIEncoding();
@@ -28,30 +26,23 @@ namespace networkLibrary
             {      
                     this.serverSocket = new TcpListener(IPAddress.Any, port);
                     this.serverThread = new Thread(new ThreadStart(ListenForClients));
-                    this.serverThread.Start();
-                    //logs.addLog(Constants.CLOUD_STARTED_CORRECTLY, true, Constants.LOG_INFO, true);        
+                    this.serverThread.Start();       
             }
             else
             {
-                //logs.addLog(Constants.CLOUD_STARTED_ERROR, true, Constants.LOG_ERROR, true);
-                //return false;
                 throw new Exception("server has been started");
             }
         }
         public void ListenForClients()
-        {
-            
+        {         
             this.serverSocket.Start();
             while (true)
-            {
-         
+            {       
                 try
                 {
                     TcpClient clientSocket = this.serverSocket.AcceptTcpClient();
                     ClientArgs args = new ClientArgs();
 
-                   // args.NodeName = networkLibrary.Constants.NEW_CLIENT_LOG;
-                    
                     args.ID = clientSocket;
 
                     this.clientSocket.Add(clientSocket);
@@ -66,6 +57,7 @@ namespace networkLibrary
                     break;
                 }
             }
+            
         }
 
         protected void ListenForMessage(object client)
@@ -95,8 +87,7 @@ namespace networkLibrary
                     break;
                 }
 
-                string signal = encoder.GetString(message, 0, bytesRead);
-                
+                string signal = encoder.GetString(message, 0, bytesRead);              
                 MessageArgs myArgs = new MessageArgs(signal);
                 myArgs.ID = clientSocket;
                 OnNewMessageRecived(this, myArgs);
@@ -144,43 +135,47 @@ namespace networkLibrary
             }
             catch
             {
-                Console.WriteLine("Problems with disconnecting clients from cloud");
+                Console.WriteLine("Problems with disconnecting clients");
             }
         }
 
         public void stopServer()
-        {          
+        {
+            //serverThread.Abort();
+            //serverThread.Interrupt();
+            //serverThread.Join();  
+
             foreach (TcpClient client in clientSocket)
             {
                 try
                 {
                     client.GetStream().Close();
                     client.Close();
-                    clientSocket.Remove(client);
+                    //clientSocket.Remove(client);
                 }
                 catch
                 {
                     Console.WriteLine("Problems with disconnecting clients from cloud");
                 }
             }
+            clientSocket.Clear();
 
             if (serverSocket != null)
             {
                 try
                 {
-                    serverSocket.Stop();
                     
-                    if (serverThread.IsAlive)
-                    { serverThread.Abort(); }
+                    serverSocket.Stop();
+
                 }
                 catch
                 {
-                    Console.WriteLine("Unable to stop cloud");
+                    Console.WriteLine("Unable to stop");
                 }
             }
-                    
+            serverThread = null; 
             serverSocket = null;
-            serverThread = null;
+            
         }
 
         public void sendMessage(TcpClient client, string msg)

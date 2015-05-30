@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace networkLibrary
 {
-    class Link
+    class CrossConnection
     {
         string portIn;
         string portOut;
         string slotIn;
         string slotOut;
 
-        public Link()
+        public CrossConnection()
         {
 
         }
