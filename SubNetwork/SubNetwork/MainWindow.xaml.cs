@@ -23,6 +23,7 @@ namespace SubNetwork
         public MainWindow()
         {
             InitializeComponent();
+            AdministrativeDomain abc = new AdministrativeDomain(this);
         }
     }
 }
