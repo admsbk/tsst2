@@ -17,6 +17,11 @@ namespace SubNetwork
             resources = new Dictionary<String, OneLRM>();
         }
 
+        void LinkConnectionRequest() { }
+        void LinkConnectionDeallocation() { }
+        void SNPNegotiation() { }
+        void SNPRelease() { }
+
         public void addLRM(String subConnection, List<String> portIn, List<String> portOut)
         {
             resources.Add(subConnection, new OneLRM(portIn, portOut));

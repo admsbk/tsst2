@@ -18,5 +18,7 @@
 		<Link Id="Link15" SrcId="NetworkNode4" DstId="NetworkNode3" SrcPortId="P3" DstPortId="P6" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>		
 		<Link Id="Link16" SrcId="NetworkNode4" DstId="NetworkNode5" SrcPortId="P4" DstPortId="P6" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>
 		<ConnectionControl Id="CCLink1" SrcId="NCC1" DstId="NCC2"/>
+		<ConnectionControl Id="UNI1" SrcId="ClientNode1@CallControll" DstId="NCC1"/>
+
 	</TPology>
 </Cloud>

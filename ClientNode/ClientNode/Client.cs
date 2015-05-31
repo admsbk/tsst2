@@ -20,10 +20,10 @@ namespace ClientNode
         private int messageNumber = 0;
         private int rIndex;
         private MainWindow mainWindow;
-        private string name { get; set; }
-        private string nodeName { get; set; }
-        private string CloudIP { get; set; }
-        private string CloudPort { get; set; }
+        public string name { get; set; }
+        public string nodeName { get; set; }
+        public string CloudIP { get; set; }
+        public string CloudPort { get; set; }
         public List<string> portsIn { get; set; }
         public List<string> portsOut { get; set; }
 

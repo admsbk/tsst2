@@ -14,16 +14,17 @@ namespace SubNetwork
     {
         private int messageNumber = 0;
         private transportClient signalization;
-        private networkLibrary.transportServer.NewMsgHandler msgHandler;
-        private Dictionary<string, string> directory;
+        private networkLibrary.transportClient.NewMsgHandler msgHandler;
+        private NCC networkCallController;
         MainWindow window;
 
         public AdministrativeDomain(MainWindow window)
         {
             this.window = window;
             signalization = new transportClient("localhost", "3333");
-            msgHandler = new transportServer.NewMsgHandler(newMessageReceived);
-            directory = new Dictionary<string, string>();
+            networkCallController = new NCC();
+            msgHandler = new transportClient.NewMsgHandler(newMessageReceived);
+            signalization.OnNewMessageRecived += msgHandler;
             signalization.sendMessage("NCC1#");
         }
 
@@ -31,6 +32,18 @@ namespace SubNetwork
         private void newMessageReceived(object a, MessageArgs e) 
         {
             addLog(window.logList, e.message, Constants.LOG_INFO);
+            try
+            {
+                string command = e.message.Split('#')[0].Split('%')[1];
+                switch (command)
+                {
+                    case "CallRequest":
+                        string callingId = networkCallController.checkClientNetAddress(e.message.Split('#')[2]);
+                        addLog(window.logList, "Route from " + e.message.Split('#')[1] + " to " + callingId+"/"+e.message.Split('#')[2], Constants.LOG_INFO);
+                        break;
+                }
+            }
+            catch { }
         }
         private void nameCastReceived(string message) { }
         private void callCoordinationReceived(string message) { }

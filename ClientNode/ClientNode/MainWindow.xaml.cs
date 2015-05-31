@@ -25,9 +25,12 @@ namespace ClientNode
     {
         string pathToConfig;
         Client client;
+        CPCC cpcc;
+        Logs log;
         public MainWindow()
         {
             InitializeComponent();
+            log = new Logs();
             client = new Client(this.chat, this.txtBlock, this);
             setChat();
 
@@ -64,6 +67,7 @@ namespace ClientNode
         private void startService()
         {
             client.startService();
+            cpcc = new CPCC(log, client.CloudIP, client.CloudPort, client.name, client.nodeName);
             
         }
 
@@ -96,6 +100,10 @@ namespace ClientNode
             //MessageBox.Show("load conf clicked");
             client.stopService();
         }
+        private void Logs_Click(object sender, EventArgs e)
+        {
+            log.ShowDialog();
+        }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
@@ -105,7 +113,7 @@ namespace ClientNode
         private void CallingButton_Click(object sender, RoutedEventArgs e)
         {
             string callingName = this.CallName.Text;
-
+            cpcc.sendMessage("CallRequest#" + client.name +"#" + callingName);
             //Proba polaczenia (tylko do kogo? NM?)
 
             this.chatBox.IsEnabled = true;

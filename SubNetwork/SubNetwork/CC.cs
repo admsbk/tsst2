@@ -8,5 +8,7 @@ namespace SubNetwork
 {
     class CC
     {
+        void ConnectionRequest(){}
+        void PeerCoordination() { }
     }
 }

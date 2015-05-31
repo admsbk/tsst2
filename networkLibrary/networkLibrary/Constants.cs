@@ -82,6 +82,24 @@ namespace networkLibrary
         public const string CLIENT_INPUT_PORT = "CP";
         public const string CLIENT_OUTPUT_PORT = "CP";
 
+        public const string CPCC_CALL_REQUEST = "Requested call.";
+        public const string CPCC_CALL_TEARDOWN = "Finished the call.";
+        public const string CPCC_CALL_ACCEPT = "Incomming call.";
+        public const string CPCC_CALL_REQUEST_0 = "Conncted.";
+        public const string CPCC_CALL_REQUEST_1 = "Authorization failed.";
+        public const string CPCC_CALL_REQUEST_2 = "Destination unreachable.";
+        public const string CPCC_CALL_REQUEST_3 = "Destination not found.";
+        public const string CPCC_TEARDOWN_0 = "Finished the call.";
+        public const string CPCC_TEARDOWN_1 = "Connection lost.";
+        public const string CPCC_RECONNECTING = "Reconnecting.";
+        public const string CPCC_CALL_EXISTS = "Call Request error. Already connected to selected user.";
+        public const string PARSER_CALL_REQUEST = "CALL_REQUEST";
+        public const string PARSER_CALL_REQUEST_RESPONSE = "CALL_REQUEST_RESPONSE";
+        public const string PARSER_CALL_TEARDOWN = "CALL_TEARDOWN";
+        public const string PARSER_CALL_ACCEPT = "CALL_ACCEPT";
+        public const string CALL_TEARDOWN_REASON = "1";
+        public const string UNKNOWN_CLIENT = "Unknown Client Request";
+
 
     }
 }

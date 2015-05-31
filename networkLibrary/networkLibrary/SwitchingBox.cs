@@ -22,18 +22,18 @@ namespace networkLibrary
         public string forwardMessage(string message)
         {
             string[] tempMessage = new string[2];
-            tempMessage = message.Split('&');
+            tempMessage = message.Split('%');
 
             foreach (Pair<string, string> pair in SwitchingTable)
             {
                 if (pair.First == tempMessage[0])
                 {
-                    return pair.Second + "&" + tempMessage[1];
+                    return pair.Second + "%" + tempMessage[1];
                 }
 
                 else if (pair.Second == tempMessage[0])
                 {
-                    return pair.First + "&" + tempMessage[1];
+                    return pair.First + "%" + tempMessage[1];
                 }
             }
             return null;

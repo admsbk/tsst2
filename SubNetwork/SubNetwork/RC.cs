@@ -8,5 +8,10 @@ namespace SubNetwork
 {
     class RC
     {
+
+        void LocalTopology() { }
+        void RouteTableQuery() { }
+        void NetworkTopology() { }
+
     }
 }

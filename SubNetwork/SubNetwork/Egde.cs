@@ -8,5 +8,11 @@ namespace SubNetwork
 {
     class Egde
     {
+        string src_node;
+        string dst_node;
+        int weight;
+        int length;
+
+
     }
 }

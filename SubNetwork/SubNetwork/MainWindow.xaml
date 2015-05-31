@@ -6,8 +6,8 @@
         <TabControl HorizontalAlignment="Left" Height="314" Margin="5,5,5,5" VerticalAlignment="Top" Width="287">
             <TabItem Header="NCC">
                 <Grid Background="#FFE5E5E5">
-                    <ScrollViewer x:Name="scroll" MaxHeight="280" MaxWidth="300" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Visible"  Height="276" Margin="0,0,10,0">
-                        <Grid x:Name="logList" Width="281" Height="276">
+                    <ScrollViewer x:Name="scroll" MaxHeight="280" MaxWidth="280" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Visible"  Height="276">
+                        <Grid x:Name="logList" Width="565" Height="276">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="282*"/>
                             </Grid.ColumnDefinitions>

@@ -9,6 +9,7 @@ set/p "NetworkNode=>>"
 
 
 START NetworkManager\NetworkManager\bin\Debug\NetworkManager.exe Config/ManagerConfig.xml
+START SubNetwork\SubNetwork\bin\Debug\SubNetwork.exe
 
 for /L %%A in (1,1,%ClientNode%) do (
 	START ClientNode\ClientNode\bin\Debug\ClientNode.exe Config/Client/Client%%A.xml
