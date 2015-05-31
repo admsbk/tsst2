@@ -52,11 +52,17 @@ namespace networkLibrary
                 {
                     foreach (Pair<string, string> pair in SwitchingTable)
                     {
-                        if (pair.First == tempMessage2[0])
+                        if (pair.First == tempMessage2[0] + ".")
+                        {
                             dstPort = pair.Second + ".";
-                            
-                        else if (pair.Second == tempMessage2[0])
+                            break;
+                        }
+
+                        else if (pair.Second == tempMessage2[0] + ".")
+                        {
                             dstPort = pair.First + ".";
+                            break;
+                        }
                     }
                 }
                 else
@@ -64,10 +70,16 @@ namespace networkLibrary
                     foreach (Pair<string, string> pair in SwitchingTable)
                     {
                         if (pair.First == tempMessage2[0])
+                        {
                             dstPort = pair.Second;
+                            break;
+                        }
 
                         else if (pair.Second == tempMessage2[0])
+                        {
                             dstPort = pair.First;
+                            break;
+                        }
                     }
                 }
                     

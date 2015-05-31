@@ -21,6 +21,7 @@ namespace networkLibrary
             portsIn = new List<string>();
             portsOut = new List<string>();
             switchTable = new Dictionary<string, string>();
+            controlConnection = new Dictionary<string, string>();
             
             XmlDocument xml = new XmlDocument();
             xml.Load(path);
@@ -38,7 +39,7 @@ namespace networkLibrary
                 }
                 if (elementType == Constants.Cloud)
                 {
-                    
+                    readSignalizationLinks(xml);
                     readCloudPorts(xml, Constants.Link);
                 }
 
@@ -48,6 +49,15 @@ namespace networkLibrary
                     readPorts(xml, Constants.INPUT_PORT, portsIn);
                     readPorts(xml, Constants.OUTPUT_PORT, portsOut);
                 }
+            }
+        }
+
+        private void readSignalizationLinks(XmlDocument xml)
+        {
+            foreach (XmlNode xnode in xml.SelectNodes(Constants.CCLink))
+            {
+                controlConnection.Add(xnode.Attributes[Constants.SRC_ID].Value, 
+                                        xnode.Attributes[Constants.DST_ID].Value);
             }
         }
 

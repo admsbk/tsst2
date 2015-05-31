@@ -19,6 +19,7 @@ namespace Cloud
         private int messageNumber = 0;
         private ListView links;
         private ListView nodes;
+        private MainWindow window;
         private Grid logs;
         private string CloudId { get; set; }
         private string CloudIP { get; set; }
@@ -27,17 +28,20 @@ namespace Cloud
         private List<string> portsOut { get; set; }
         private Config conf;
         private SwitchingBox switchBox;
+        private SwitchingBox signalizationBox;
         private Dictionary<string, TcpClient> clientSockets = new Dictionary<string, TcpClient>();
         private List<TcpClient> sockests;
         transportServer.NewClientHandler reqListener;
         transportServer.NewMsgHandler msgListener;
 
-        public NetworkCloud(ListView links, ListView nodes, Grid logs)
+        public NetworkCloud(ListView links, ListView nodes, Grid logs, MainWindow window)
         {
             this.links = links;
             this.logs = logs;
             this.nodes = nodes;
             this.switchBox = new SwitchingBox();
+            this.signalizationBox = new SwitchingBox();
+            this.window = window;
         }
 
         #region CloudServer
@@ -103,7 +107,7 @@ namespace Cloud
         private void newMessageRecived(object a, MessageArgs e)
         {
             
-            if(e.message.Contains("COP"))
+            if(e.message.Contains("CP"))
             {
                 string getSenderId = clientSockets.FirstOrDefault(x => x.Value == e.ID).Key;
                 addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
@@ -211,6 +215,12 @@ namespace Cloud
                     links.Items.Add(new CrossConnection(Convert.ToString(linkNum), keyItem[0], keyItem[1],
                                                 valueItem[0], valueItem[1]));
                     linkNum++;
+                }
+
+                foreach (KeyValuePair<string, string> entry in conf.controlConnection)
+                {
+                    this.signalizationBox.addLink(entry.Key, entry.Value);
+                    window.signalizationNetwork.Items.Add(new CallControlConnection(entry.Key, entry.Value));
                 }
                 
                 addLog(logs, networkLibrary.Constants.CONFIG_OK, networkLibrary.Constants.LOG_INFO);

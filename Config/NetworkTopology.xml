@@ -1,49 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Cloud Id = "NetworkCloud" CloudHost="localhost" CloudPort="3333" >
-	<Topology>
-		<Link Id="Link1" SrcId="ClientNode1" DstId="NetworkNode1" SrcPortId="OP1" DstPortId="CIP" /> 
-		<Link Id="Link2" SrcId="NetworkNode1" DstId="ClientNode1" SrcPortId="COP" DstPortId="IP1" />
-		
-		<Link Id="Link3" SrcId="ClientNode2" DstId="NetworkNode2" SrcPortId="OP1" DstPortId="CIP" /> 
-		<Link Id="Link4" SrcId="NetworkNode2" DstId="ClientNode2" SrcPortId="COP" DstPortId="IP1" />
-		
-		<Link Id="Link5" SrcId="ClientNode3" DstId="NetworkNode3" SrcPortId="OP1" DstPortId="CIP" /> 
-		<Link Id="Link6" SrcId="NetworkNode3" DstId="ClientNode3" SrcPortId="COP" DstPortId="IP1" />
-		
-		<Link Id="Link7" SrcId="ClientNode4" DstId="NetworkNode4" SrcPortId="OP1" DstPortId="CIP" /> 
-		<Link Id="Link8" SrcId="NetworkNode4" DstId="ClientNode4" SrcPortId="COP" DstPortId="IP1" />
-		
-		<Link Id="Link9" SrcId="NetworkNode1" DstId="NetworkNode2" SrcPortId="OP1" DstPortId="IP1" />
-		<Link Id="Link10" SrcId="NetworkNode2" DstId="NetworkNode5" SrcPortId="OP1" DstPortId="IP1" /> 	
-		<Link Id="Link11" SrcId="NetworkNode5" DstId="NetworkNode1" SrcPortId="OP1" DstPortId="IP1" /> 
-		
-		<Link Id="Link12" SrcId="NetworkNode3" DstId="NetworkNode2" SrcPortId="OP1" DstPortId="IP2" />
-		<Link Id="Link13" SrcId="NetworkNode5" DstId="NetworkNode3" SrcPortId="OP2" DstPortId="IP1" /> 
-		
-		<Link Id="Link14" SrcId="NetworkNode4" DstId="NetworkNode1" SrcPortId="OP1" DstPortId="IP2" />
-		<Link Id="Link15" SrcId="NetworkNode1" DstId="NetworkNode5" SrcPortId="OP2" DstPortId="IP2" /> 
-		<Link Id="Link16" SrcId="NetworkNode5" DstId="NetworkNode2" SrcPortId="OP3" DstPortId="IP3" />
-		<Link Id="Link17" SrcId="NetworkNode2" DstId="NetworkNode3" SrcPortId="OP2" DstPortId="IP2" /> 
-		
-		<Link Id="Link18" SrcId="NetworkNode3" DstId="NetworkNode4" SrcPortId="OP2" DstPortId="IP1" />
-		<Link Id="Link19" SrcId="NetworkNode4" DstId="NetworkNode3" SrcPortId="OP2" DstPortId="IP3" />
-		
-		<Link Id="Link20" SrcId="NetworkNode4" DstId="NetworkNode5" SrcPortId="OP3" DstPortId="IP3" />
-		<Link Id="Link21" SrcId="NetworkNode5" DstId="NetworkNode4" SrcPortId="OP4" DstPortId="IP2" />
-		
-		<Link Id="Link22" SrcId="NetworkNode1" DstId="NetworkNode4" SrcPortId="OP3" DstPortId="IP3" />
-		<Link Id="Link23" SrcId="NetworkNode2" DstId="NetworkNode1" SrcPortId="OP3" DstPortId="IP3" />
-		<Link Id="Link24" SrcId="NetworkNode3" DstId="NetworkNode5" SrcPortId="OP3" DstPortId="IP4" />
-		
-		
-		
-	
-		
-
-		
-		
-		
-
-
-	</Topology>
+	<TPology>
+		<Link Id="Link1" SrcId="ClientNode1" DstId="NetworkNode1" SrcPortId="P1" DstPortId="CP" /> 	
+		<Link Id="Link2" SrcId="ClientNode2" DstId="NetworkNode2" SrcPortId="P1" DstPortId="CP" /> 
+		<Link Id="Link3" SrcId="ClientNode3" DstId="NetworkNode3" SrcPortId="P1" DstPortId="CP" /> 
+		<Link Id="Link4" SrcId="ClientNode4" DstId="NetworkNode4" SrcPortId="P1" DstPortId="CP" /> 
+		<Link Id="Link5" SrcId="NetworkNode1" DstId="NetworkNode2" SrcPortId="P1" DstPortId="P1" />
+		<Link Id="Link6" SrcId="NetworkNode2" DstId="NetworkNode5" SrcPortId="P2" DstPortId="P1" /> 	
+		<Link Id="Link7" SrcId="NetworkNode5" DstId="NetworkNode1" SrcPortId="P2" DstPortId="P2" /> 
+		<Link Id="Link8" SrcId="NetworkNode3" DstId="NetworkNode2" SrcPortId="P1" DstPortId="P3" />
+		<Link Id="Link9" SrcId="NetworkNode5" DstId="NetworkNode3" SrcPortId="P3" DstPortId="P3" /> 
+		<Link Id="Link10" SrcId="NetworkNode4" DstId="NetworkNode1" SrcPortId="P1" DstPortId="P3" />
+		<Link Id="Link11" SrcId="NetworkNode1" DstId="NetworkNode5" SrcPortId="P4" DstPortId="P4" /> 
+		<Link Id="Link12" SrcId="NetworkNode5" DstId="NetworkNode2" SrcPortId="P5" DstPortId="P4" />
+		<Link Id="Link13" SrcId="NetworkNode2" DstId="NetworkNode3" SrcPortId="P5" DstPortId="P4" /> 		
+		<Link Id="Link14" SrcId="NetworkNode3" DstId="NetworkNode4" SrcPortId="P5" DstPortId="P2" />
+		<Link Id="Link15" SrcId="NetworkNode4" DstId="NetworkNode3" SrcPortId="P3" DstPortId="P6" />		
+		<Link Id="Link16" SrcId="NetworkNode4" DstId="NetworkNode5" SrcPortId="P4" DstPortId="P6" />
+		<ConnectionControl Id="CCLink1" SrcId="Domain1" DstId="Domain2"/>
+	</TPology>
 </Cloud>

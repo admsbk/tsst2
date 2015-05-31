@@ -32,7 +32,7 @@ namespace Cloud
         {
             InitializeComponent();
             setGraphics();
-            cloud = new NetworkCloud(this.links, this.nodes, this.logList);
+            cloud = new NetworkCloud(this.links, this.nodes, this.logList, this);
             var path = @"Config/NetworkTopology.xml";
 
 

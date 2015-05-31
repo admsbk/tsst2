@@ -35,8 +35,8 @@ namespace networkLibrary
         public const string DST_ID = "DstId";
         public const string SRC_PORT_ID = "SrcPortId";
         public const string DST_PORT_ID = "DstPortId";
-        public const string INPUT_PORT = "//InputPorts/Port";
-        public const string OUTPUT_PORT = "//OutputPorts/Port";
+        public const string INPUT_PORT = "//Port";
+        public const string OUTPUT_PORT = "//Port";
         public const string CLIENT_NAME = "Name";
 
 
@@ -45,6 +45,7 @@ namespace networkLibrary
         public const string Cloud = "//Cloud[@Id]";
         public const string Link = "//Link[@Id]";
         public const string Client = "//Client[@Id]";
+        public const string CCLink = "//ConnectionControl[@Id]";
 
         //handle messages
         public const string RECEIVED_FROM_MANAGER = "Received from Network Manager:";
@@ -78,8 +79,8 @@ namespace networkLibrary
         public const int ERROR = 3;
 
         public const string NONEXISTENT_PORT = "No such port/slot in this node.";
-        public const string CLIENT_INPUT_PORT = "CIP";
-        public const string CLIENT_OUTPUT_PORT = "COP";
+        public const string CLIENT_INPUT_PORT = "CP";
+        public const string CLIENT_OUTPUT_PORT = "CP";
 
 
     }
