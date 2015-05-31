@@ -13,6 +13,7 @@ namespace networkLibrary
         public List<string> portsIn { get; set; }
         public List<string> portsOut { get; set; }
         public Dictionary<string, string> switchTable { get; set; }
+        public Dictionary<string, string> controlConnection { get; set; }
 
         public Config(string path, string elementType)
         {
@@ -68,7 +69,6 @@ namespace networkLibrary
                 string dstId = xnode.Attributes[Constants.DST_ID].Value;
                 string srcPortId = xnode.Attributes[Constants.SRC_PORT_ID].Value;
                 string dstPortId = xnode.Attributes[Constants.DST_PORT_ID].Value;
-
 
                 string key = srcId + "%" + srcPortId;
                 string value = dstId + "%" + dstPortId;

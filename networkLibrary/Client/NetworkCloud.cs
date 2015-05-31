@@ -123,11 +123,10 @@ namespace Cloud
             
             else if (e.message.Split('#').Length == 1 && e.message.Split('/').Length != 2)
             {
-                //string[] getSenderId = e.Message.Split('%');
                 string getSenderId = clientSockets.FirstOrDefault(x => x.Value == e.ID).Key;
                 if (e.message.Split(':').Length > 1)
                 {
-                addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
+                    addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
                     try
                     {
                         string forwarded = switchBox.forwardMessage(getSenderId + "%" + e.message);
@@ -162,6 +161,11 @@ namespace Cloud
                         addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.message), Constants.LOG_ERROR);
                     }
                 }
+            }
+
+            else if(e.message.Split('#')[0].Contains("CallControl"))
+            {
+
             }
             else
             {
