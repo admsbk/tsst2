@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Node Id="NCC1" CloudHost="localhost" CloudPort="3333">
+<DomainController Id="NCC1" CloudHost="localhost" CloudPort="3333" Domain="Domain1">
   <Ports>
 
   </Ports>
-</Node>
+</DomainController>

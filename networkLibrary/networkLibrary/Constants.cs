@@ -38,7 +38,11 @@ namespace networkLibrary
         public const string INPUT_PORT = "//Port";
         public const string OUTPUT_PORT = "//Port";
         public const string CLIENT_NAME = "Name";
-
+        public const string DOMAIN = "Domain";
+        public const string DOMAIN_SRC = "SrcDomainID";
+        public const string DOMAIN_DST = "DstDomainID";
+        public const string WEIGHT = "Weight";
+        public const string LENGTH = "Length";
 
         //elementType - to read config from xml
         public const string node = "//Node[@Id]";
@@ -46,6 +50,8 @@ namespace networkLibrary
         public const string Link = "//Link[@Id]";
         public const string Client = "//Client[@Id]";
         public const string CCLink = "//ConnectionControl[@Id]";
+        public const string AD = "//DomainController[@Id]";
+        
 
         //handle messages
         public const string RECEIVED_FROM_MANAGER = "Received from Network Manager:";

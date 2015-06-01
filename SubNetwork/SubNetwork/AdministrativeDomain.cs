@@ -16,17 +16,56 @@ namespace SubNetwork
         private transportClient signalization;
         private networkLibrary.transportClient.NewMsgHandler msgHandler;
         private NCC networkCallController;
+        private LRM linkResourceManager;
+        private string CloudPort;
+        private string CloudIp;
+        private string domain;
         MainWindow window;
+        
 
         public AdministrativeDomain(MainWindow window)
         {
             this.window = window;
-            signalization = new transportClient("localhost", "3333");
-            networkCallController = new NCC();
-            msgHandler = new transportClient.NewMsgHandler(newMessageReceived);
-            signalization.OnNewMessageRecived += msgHandler;
-            signalization.sendMessage("NCC1#");
         }
+
+        public void readConfig(string xmlConfigPath, string xmlTopologyPath)
+        {
+            try
+            {
+                networkLibrary.Config conf = new Config(xmlConfigPath, Constants.AD);
+                networkCallController = new NCC(conf.config[0]);
+                linkResourceManager = new LRM(conf.config[3], window);
+                linkResourceManager.loadTopology(xmlTopologyPath);
+                CloudIp = conf.config[1];
+                this.CloudPort = conf.config[2];
+                this.domain = conf.config[3];
+                addLog(window.logList, networkLibrary.Constants.CONFIG_OK, networkLibrary.Constants.LOG_INFO);
+            }
+            catch (Exception e)
+            {
+                addLog(window.logList, networkLibrary.Constants.CONFIG_ERROR, networkLibrary.Constants.LOG_ERROR);
+                Console.WriteLine(e.StackTrace);
+            }
+
+
+        }
+
+        public void startService()
+        {
+            try
+            {
+                signalization = new transportClient(CloudIp, CloudPort);
+                msgHandler = new transportClient.NewMsgHandler(newMessageReceived);
+                signalization.OnNewMessageRecived += msgHandler;
+                signalization.sendMessage(networkCallController.getNccName()+"#");
+            }
+            catch 
+            {
+                addLog(window.logList, Constants.SERVICE_START_ERROR, Constants.LOG_ERROR);
+
+            }
+        }
+
 
         #region message received methods
         private void newMessageReceived(object a, MessageArgs e) 
@@ -50,6 +89,7 @@ namespace SubNetwork
         private void callRequestReceived(string message) { }
         #endregion
 
+        #region frontend
         private void addLog(Grid log, string message, int logType)
         {
             var color = Brushes.Black;
@@ -82,5 +122,6 @@ namespace SubNetwork
                      })
                  );
         }
+        #endregion
     }
 }

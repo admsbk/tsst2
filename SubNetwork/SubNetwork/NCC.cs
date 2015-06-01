@@ -11,11 +11,21 @@ namespace SubNetwork
     {
         private CC connectionController;
         private Dictionary<string, string> directory;
+        private string name;
 
         public NCC()
         {
             directory = new Dictionary<string, string>();
             connectionController = new CC();
+        }
+        public NCC(string name)
+        {
+            this.name = name;
+        }
+
+        public string getNccName()
+        {
+            return name;
         }
 
         public string checkClientNetAddress(string clientId)

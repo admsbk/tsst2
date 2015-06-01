@@ -14,6 +14,7 @@ namespace networkLibrary
         public List<string> portsOut { get; set; }
         public Dictionary<string, string> switchTable { get; set; }
         public Dictionary<string, string> controlConnection { get; set; }
+        public List<List<string>> links;
 
         public Config(string path, string elementType)
         {
@@ -22,32 +23,46 @@ namespace networkLibrary
             portsOut = new List<string>();
             switchTable = new Dictionary<string, string>();
             controlConnection = new Dictionary<string, string>();
+            links = new List<List<string>>();
             
             XmlDocument xml = new XmlDocument();
             xml.Load(path);
-            foreach (XmlNode xnode in xml.SelectNodes(elementType))
+            if (elementType == Constants.Link)
             {
-                config.Add(xnode.Attributes[Constants.ID].Value);
-                config.Add(xnode.Attributes[Constants.CLOUD_IP].Value);
-                config.Add(xnode.Attributes[Constants.CLOUD_PORT].Value);
-                if (elementType == Constants.node)
+                foreach (XmlNode xnode in xml.SelectNodes(elementType))
                 {
-                    config.Add(xnode.Attributes[Constants.MANAGER_IP].Value);
-                    config.Add(xnode.Attributes[Constants.MANAGER_PORT].Value);
-                    readPorts(xml, Constants.INPUT_PORT, portsIn);
-                    readPorts(xml, Constants.OUTPUT_PORT, portsOut);
+                    readLinks(xml, Constants.Link);
                 }
-                if (elementType == Constants.Cloud)
+            }
+            else {
+                foreach (XmlNode xnode in xml.SelectNodes(elementType))
                 {
-                    readSignalizationLinks(xml);
-                    readCloudPorts(xml, Constants.Link);
-                }
+                    config.Add(xnode.Attributes[Constants.ID].Value);
+                    config.Add(xnode.Attributes[Constants.CLOUD_IP].Value);
+                    config.Add(xnode.Attributes[Constants.CLOUD_PORT].Value);
+                    if (elementType == Constants.node)
+                    {
+                        config.Add(xnode.Attributes[Constants.MANAGER_IP].Value);
+                        config.Add(xnode.Attributes[Constants.MANAGER_PORT].Value);
+                        readPorts(xml, Constants.INPUT_PORT, portsIn);
+                        readPorts(xml, Constants.OUTPUT_PORT, portsOut);
+                    }
+                    if (elementType == Constants.Cloud)
+                    {
+                        readSignalizationLinks(xml);
+                        readCloudPorts(xml, Constants.Link);
+                    }
 
-                if (elementType == Constants.Client)
-                {
-                    config.Add(xnode.Attributes[Constants.CLIENT_NAME].Value);
-                    readPorts(xml, Constants.INPUT_PORT, portsIn);
-                    readPorts(xml, Constants.OUTPUT_PORT, portsOut);
+                    if (elementType == Constants.Client)
+                    {
+                        config.Add(xnode.Attributes[Constants.CLIENT_NAME].Value);
+                        readPorts(xml, Constants.INPUT_PORT, portsIn);
+                        readPorts(xml, Constants.OUTPUT_PORT, portsOut);
+                    }
+                    if (elementType == Constants.AD)
+                    {
+                        config.Add(xnode.Attributes[Constants.DOMAIN].Value);
+                    }
                 }
             }
         }
@@ -58,6 +73,25 @@ namespace networkLibrary
             {
                 controlConnection.Add(xnode.Attributes[Constants.SRC_ID].Value, 
                                         xnode.Attributes[Constants.DST_ID].Value);
+            }
+        }
+
+        private void readLinks(XmlDocument xml, string attribute)
+        {
+            int i=0;
+            foreach (XmlNode xnode in xml.SelectNodes(attribute))
+            {
+                links.Add(new List<string>());
+                links[i].Add(xnode.Attributes[Constants.ID].Value);
+                links[i].Add(xnode.Attributes[Constants.SRC_ID].Value);
+                links[i].Add(xnode.Attributes[Constants.DST_ID].Value);
+                links[i].Add(xnode.Attributes[Constants.SRC_PORT_ID].Value);
+                links[i].Add(xnode.Attributes[Constants.DST_PORT_ID].Value);
+                links[i].Add(xnode.Attributes[Constants.DOMAIN_SRC].Value);
+                links[i].Add(xnode.Attributes[Constants.DOMAIN_DST].Value);
+                links[i].Add(xnode.Attributes[Constants.WEIGHT].Value);
+                links[i].Add(xnode.Attributes[Constants.LENGTH].Value);
+                i++;
             }
         }
 

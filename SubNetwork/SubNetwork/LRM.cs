@@ -1,4 +1,5 @@
-﻿using System;
+﻿using networkLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,36 @@ namespace SubNetwork
 {
     class LRM
     {
-        private Dictionary<String, OneLRM> resources;
-        private String domain;
+        private Dictionary<string, SNPLink> resources;
+        private string domain;
+        MainWindow window;
 
-        public LRM(String domain)
+        public LRM(string domain, MainWindow window)
         {
             this.domain = domain;
-            resources = new Dictionary<String, OneLRM>();
+            resources = new Dictionary<string, SNPLink>();
+            this.window = window;
+        }
+
+        public void loadTopology(string xmlPath)
+        {
+            try
+            {
+                Config conf = new Config(xmlPath, Constants.Link);
+                foreach(List<string> link in conf.links)
+                {
+                    if (link.Count > 4)
+                    {
+                        if (domain == link[5])
+                        {
+                            SNPLink l = new SNPLink(link[1], link[2], link[3], link[4]);
+                            resources.Add(link[0], l);
+                            window.links.Items.Add(new SNPLink(link[1], link[2], link[3], link[4]));
+                        }
+                    }
+                }
+            }
+            catch { }
         }
 
         void LinkConnectionRequest() { }
@@ -22,24 +46,50 @@ namespace SubNetwork
         void SNPNegotiation() { }
         void SNPRelease() { }
 
-        public void addLRM(String subConnection, List<String> portIn, List<String> portOut)
+        public void addLRM(String subConnection, string portIn, string portOut)
         {
-            resources.Add(subConnection, new OneLRM(portIn, portOut));
+            //resources.Add(subConnection, new SNPLink(portIn, portOut));
         }
 
-        public String Domain
+        public string Domain
         {
             get { return domain; }
         }
     }
 
-    class OneLRM{
-        public List<String> portIn { get; set; }
-        public List<String> portOut { get; set; }
-        public OneLRM(List<String> portIn, List<String> portOut)
+    class SNPLink{
+        public String portSrc { get; set; }
+        public String portDst { get; set; }
+        public String nodeSrc { get; set; }
+        public String nodeDst { get; set; }
+
+        private bool isBusy;
+
+        public SNPLink(String nodeIn, String nodeOut, String portIn, String portOut)
         {
-            this.portIn = portIn;
-            this.portOut = portOut;
+            this.portSrc = portSrc;
+            this.portDst = portDst;
+            this.nodeSrc = nodeSrc;
+            this.nodeDst = nodeDst;
+            isBusy = false;
+        }
+
+        public bool requestLink()
+        {
+            if (!isBusy)
+            {
+                isBusy = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void releaseLink()
+        {
+            isBusy = false;
         }
     }
 }
