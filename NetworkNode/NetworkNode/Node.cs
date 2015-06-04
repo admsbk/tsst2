@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Threading;
 
 namespace NetworkNode
 {
@@ -28,6 +29,9 @@ namespace NetworkNode
         public transportClient.NewMsgHandler newMessageHandler { get; set; }
         public transportClient.NewMsgHandler newOrderHandler { get; set; }
         private transportClient.NewSignalization signHandler { get; set; }
+
+        private transportClient signalizationNetwork;
+        private transportClient.NewMsgHandler orderListener;
         string ManagerIP { get; set; }
         string ManagerPort { get; set; }
         string CloudIP { get; set; }
@@ -165,6 +169,11 @@ namespace NetworkNode
             
         }
 
+        private void newControlOrder(object a, MessageArgs e)
+        {
+
+        }
+
         public bool isConnected()
         {
             return cloud.isConnected();
@@ -176,12 +185,20 @@ namespace NetworkNode
             {
                
                 cloud = new transportClient(CloudIP, CloudPort);
+                signalizationNetwork = new transportClient(CloudIP, CloudPort);
                 newMessageHandler = new transportClient.NewMsgHandler(newMessageRecived);
+                orderListener = new transportClient.NewMsgHandler(newControlOrder);
                 signHandler = new transportClient.NewSignalization(newSignalization);
+
                 cloud.OnNewSignalization += signHandler;
                 cloud.OnNewMessageRecived += newMessageHandler;
+                signalizationNetwork.OnNewMessageRecived += orderListener;
 
                 cloud.sendMessage(this.NodeId + "#");
+                signalizationNetwork.sendMessage(this.NodeId + "@CallControll#");
+                Thread.Sleep(500);
+                signalizationNetwork.sendMessage("NCC1@CallControll#MyParams#" + this.NodeId);
+
 
                 addLog(logs, Constants.SERVICE_START_OK, Constants.LOG_INFO);
 
@@ -283,17 +300,34 @@ namespace NetworkNode
 
         public void stopService()
         {
-            if (cloud != null)
+            try
             {
+                if (cloud != null)
+                {
+                    cloud.OnNewMessageRecived -= newMessageHandler;
+                    cloud.OnNewSignalization -= signHandler;
+                    signalizationNetwork.OnNewMessageRecived -= orderListener;
+                    manager.OnNewMessageRecived -= newOrderHandler;
+                    signHandler = null;
+                    newMessageHandler = null;
+                    newOrderHandler = null;
+                    orderListener = null;
+                    cloud.stopService();
+                    cloud = null;
+                    manager.stopService();
+                    manager = null;
+                    signalizationNetwork.stopService();
+                    signalizationNetwork = null;
+                }
+            }
+            catch {
                 cloud.OnNewMessageRecived -= newMessageHandler;
                 cloud.OnNewSignalization -= signHandler;
                 manager.OnNewMessageRecived -= newOrderHandler;
                 signHandler = null;
                 newMessageHandler = null;
                 newOrderHandler = null;
-                cloud.stopService();
                 cloud = null;
-                manager.stopService();
                 manager = null;
             }
         }
@@ -338,24 +372,21 @@ namespace NetworkNode
                     Port tempPort = new Port(portIn);
                     this.portsIn.Add(tempPort);
                 }
-
+                /*
                 foreach (string portOut in portsOutTemp)
                 {
                     Port tempPort = new Port(portOut);
                     this.portsIn.Add(tempPort);
-                }
+                }*/
 
                 this.mainWindow.Title = this.NodeId;
                 addLog(logs, networkLibrary.Constants.CONFIG_OK, networkLibrary.Constants.LOG_INFO);
-
+                
                 foreach (Port portIn in portsIn)
                 {
                     addLog(logs, portIn.portID, Constants.TEXT);
                 }
-                foreach (Port portOut in portsOut)
-                {
-                    addLog(logs, portOut.portID, Constants.TEXT);
-                }
+                
             }
 
             catch (Exception e)

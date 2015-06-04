@@ -9,10 +9,10 @@ namespace networkLibrary
     public class SwitchingBox
     {
         //Wpisy w słowniku: "KTO_PRZYSLAL%NA_KTORY_PORT", "KOMU_WYSLAC%NA_KTORY_PORT"
-        private Dictionary<string, string> SwitchingTable;
+        private List<Pair<string, string>> SwitchingTable;
         public SwitchingBox()
         {
-            SwitchingTable = new Dictionary<string, string>();
+            SwitchingTable = new List<Pair<string, string>>();
         }
 
         //WZÓR WIADOMOSCI: "KTO_PRZYSLAL%Z_KTOREGO_PORTU&cos_tam_dalej" 
@@ -24,30 +24,46 @@ namespace networkLibrary
             string[] tempMessage = new string[2];
             tempMessage = message.Split('&');
 
-            if (SwitchingTable.ContainsKey(tempMessage[0]))
+            foreach (Pair<string, string> pair in SwitchingTable)
             {
-                string dstMessage = SwitchingTable[tempMessage[0]];
-                dstMessage += "&"+tempMessage[1];//dodanie payloadu po prostu
-                return dstMessage;
+                if (pair.First == tempMessage[0])
+                {
+                    return pair.Second + "&" + tempMessage[1];
+                }
+
+                else if (pair.Second == tempMessage[0])
+                {
+                    return pair.First + "&" + tempMessage[1];
+                }
             }
-            else
-            {
-                return null;
-            }
+            return null;
+
         }
 
         //szablon: src - "OD_KOGO%PORT"    dst - "DO_KOGO%PORT"
         public void addLink(string src, string dst)
         {
-            if (!SwitchingTable.ContainsKey(src))
+            if (!contains(src))
             {
-                this.SwitchingTable.Add(src, dst);
+                this.SwitchingTable.Add(new Pair<string, string>(src, dst));
             }
+        }
+
+        private bool contains(string port)
+        {
+            foreach (Pair<string, string> pair in SwitchingTable)
+            {
+                if (pair.First == port)
+                    return true;
+                else if (pair.Second == port)
+                    return true;
+            }
+            return false;
         }
 
         public void removeLink(string src)
         {
-            this.SwitchingTable.Remove(src);
+            //this.SwitchingTable.Remove(src);
         }
 
         public void removeAllLinks()

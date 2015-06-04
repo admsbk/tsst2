@@ -23,4 +23,15 @@ namespace Cloud
             this.DstPort = portOut;
         }
     }
+
+    class CallControlConnection
+    {
+        public string domain_src { get; set; }
+        public string domain_dst { get; set; }
+        public CallControlConnection(string domain1, string domain2) 
+        {
+            this.domain_src = domain1;
+            this.domain_dst = domain2;
+        }
+    }
 }

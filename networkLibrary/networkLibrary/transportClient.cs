@@ -22,6 +22,9 @@ namespace networkLibrary
         public delegate void NewSignalization(object myObject, MessageArgs myArgs);
         public event NewSignalization OnNewSignalization;
 
+        public delegate void OnNewRemoteClient(object myObject, RemoteClientArgs myArgs);
+        public event OnNewRemoteClient OnNewRemoteControl;
+
         public transportClient(string ip, string port)
         {
             this.encoder = new ASCIIEncoding();
@@ -75,8 +78,11 @@ namespace networkLibrary
                 }
                 string signal = encoder.GetString(message, 0, bytesRead);
                 Console.WriteLine(message);
-                MessageArgs myArgs = new MessageArgs(signal);
-                OnNewMessageRecived(this, myArgs);
+
+                    MessageArgs myArgs = new MessageArgs(signal);
+                    OnNewMessageRecived(this, myArgs);
+                
+                
             }
             if (client != null)
             {
@@ -103,6 +109,7 @@ namespace networkLibrary
                 stream.Write(buffer, 0, buffer.Length);
                 stream.Flush();     
         }
+
 
         public bool isConnected()
         {
