@@ -22,10 +22,10 @@ namespace SubNetwork
         private Manager manager;
         private RC rc { get; set; }
         private RC routingController { get; set; }
-        private Socket socket;
-
+        /*
         public int Port
         {
+            /*
             get
             {
                 if (this.socket != null)
@@ -33,71 +33,14 @@ namespace SubNetwork
                 else
                     return 0;
             }
-        }
+        }*/
 
         public NCC(Manager manager, LRM linkResourceManager)
         {
             this.manager = manager;
             this.rc = new RC(manager, linkResourceManager);
-            /*
-            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint ip = new IPEndPoint(IPAddress.Any, 0);
-            this.socket.Bind(ip);
-            this.socket.Listen(10);
-            this.socket.BeginAccept(OnClientConnect, this.socket);*/
         }
 
-        private void OnClientConnect(IAsyncResult asyn)
-        {
-            DirectoryEntry client = new DirectoryEntry();
-            client.Socket = this.socket.EndAccept(asyn);
-            int received = client.Socket.Receive(client.Buffer);
-            string[] login = (Encoding.ASCII.GetString(client.Buffer, 0, received)).Split(' ');
-            if (login.Length == 3 && login[0] == "login")
-            {
-                client.Name = login[1];
-                client.Id = Int32.Parse(login[2]);
-                if (Directory.ContainsKey(client.Name))
-                {
-                    client.Socket.Send(Encoding.ASCII.GetBytes("rejected"));
-                    client.Socket.Close();
-                }
-                else
-                {
-                    Directory.Add(login[1], client);
-                    client.Socket.Send(Encoding.ASCII.GetBytes("ok"));
-                    client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, OnDataReceived, client);
-                }
-            }
-            else
-            {
-                client.Socket.Send(Encoding.ASCII.GetBytes("rejected"));
-                client.Socket.Close();
-            }
-            this.socket.BeginAccept(OnClientConnect, this.socket);
-        }
-
-        private void OnDataReceived(IAsyncResult asyn)
-        {
-            DirectoryEntry client = (DirectoryEntry)asyn.AsyncState;
-            int r = 0;
-            try { r = client.Socket.EndReceive(asyn); }
-            catch (SocketException)
-            {
-                client.Socket.Close();
-                Directory.Remove(client.Name);
-                return;
-            }
-            if (r == 0)
-            {
-                client.Socket.Close();
-                Directory.Remove(client.Name);
-                return;
-            }
-            string recv = Encoding.ASCII.GetString(client.Buffer, 0, r);
-            ProcessQuery(recv, client);
-            client.Socket.BeginReceive(client.Buffer, 0, client.Buffer.Length, SocketFlags.None, OnDataReceived, client);
-        }
 
         private void ProcessQuery(string recv, DirectoryEntry client)
         {
@@ -163,6 +106,26 @@ namespace SubNetwork
                 if (client.Id == manager.Connections[connectionId].Source     // połączenie może rozłączyć jedynie
                     || client.Id == manager.Connections[connectionId].Target) // węzeł korzystający z niego
                     CallTeardown(manager.Connections[connectionId], client.Name);
+            }
+        }
+
+        public void DirectoryRegistration(string name, int id)
+        {
+            DirectoryEntry wpis = new DirectoryEntry();
+            wpis.Id = id;
+            wpis.Name = name;
+            Directory.Add(name, wpis);
+        }
+
+        public int DirectoryRequest(string name)
+        {
+            try
+            {
+                return Directory[name].Id;
+            }
+            catch
+            {
+                return -1;
             }
         }
 

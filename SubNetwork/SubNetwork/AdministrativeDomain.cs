@@ -25,6 +25,10 @@ namespace SubNetwork
         MainWindow window;
         ListView connection;
         public Manager manager { get; set; }
+        private string nccname;
+        private List<string> neighbours;
+        private List<string> parents;
+        private List<string> children;
 
 
         
@@ -34,6 +38,9 @@ namespace SubNetwork
             this.window = window;
             this.connection = window.links;
             manager = new Manager();
+            neighbours = new List<string>();
+            parents = new List<string>();
+            children = new List<string>();
         }
 
         public void readConfig(string xmlConfigPath, string xmlTopologyPath)
@@ -41,12 +48,16 @@ namespace SubNetwork
             try
             {
                 networkLibrary.Config conf = new Config(xmlConfigPath, Constants.AD);
-                //networkCallController = new NCC(conf.config[0]);
+                nccname = conf.config[0];
                 linkResourceManager = new LRM(conf.config[3], window.links);
                 linkResourceManager.loadTopology(xmlTopologyPath);
+                networkCallController = new NCC(manager, linkResourceManager);
                 CloudIp = conf.config[1];
                 this.CloudPort = conf.config[2];
                 this.domain = conf.config[3];
+                neighbours = conf.neighbours;
+                parents = conf.parent;
+                children = conf.child;
                 addLog(window.logList, networkLibrary.Constants.CONFIG_OK, networkLibrary.Constants.LOG_INFO);
             }
             catch (Exception e)
@@ -66,7 +77,7 @@ namespace SubNetwork
                 signalization = new transportClient(CloudIp, CloudPort);
                 msgHandler = new transportClient.NewMsgHandler(newMessageReceived);
                 signalization.OnNewMessageRecived += msgHandler;
-                signalization.sendMessage("NCC1@CallControll"+"#");
+                signalization.sendMessage(nccname+"@CallControll"+"#");
             }
             catch 
             {
@@ -118,13 +129,14 @@ namespace SubNetwork
 
         private void newMessageReceived(object a, MessageArgs e) 
         {
+            
             //addLog(window.logList, e.message, Constants.LOG_INFO);
             if (e.message.Contains("NetworkNode"))
                 nodeParser(e.message);
             else if (e.message.Contains("Client"))
-                clientParser(e.message);
-            
+                clientParser(e.message);         
         }
+
         private void nodeParser(string message) 
         {
             addLog(window.logList, "Node says: " + message, Constants.LOG_INFO);
@@ -134,33 +146,53 @@ namespace SubNetwork
                 string pattern = @"\d+";
                 Match match = Regex.Match(msg[0], pattern);
                 manager.newNodeConnected(match.Value, msg[0], "Type1");
-
+                
             }
         }
+
         private void clientParser(string message) 
         {
             addLog(window.logList, "Client says: " + message, Constants.LOG_INFO);
+            
             if (message.Contains("MyParams"))
             {
                 string[] msg = message.Split('#');
                 string pattern = @"\d+";
-                Match match = Regex.Match(msg[0], pattern);
-                manager.newNodeConnected("100"+match.Value, msg[0], "Type1");
+                this.nameCastReceived(msg[0].Split('@')[0] + "%100"+Regex.Match(msg[0], pattern).Value);
+                manager.newNodeConnected("100" + Regex.Match(msg[0], pattern).Value, msg[0], "Type1");
+                foreach (string neighbour in neighbours)
+                    signalization.sendMessage(neighbour + "@CallControll#DirectoryCast#" + msg[0] + "#" + domain);
+
             }
-            try
+
+            else if (message.Contains("CallRequest"))
             {
-                string command = message.Split('#')[0].Split('%')[1];
-                switch (command)
+                string[] args = message.Split('#');
+
+                int callingId = networkCallController.DirectoryRequest(args[3]);
+                int callerId = networkCallController.DirectoryRequest(message.Split('@')[0]);
+                if (callingId != -1)
                 {
-                    case "CallRequest":
-                        //string callingId = networkCallController.checkClientNetAddress(e.message.Split('#')[2]);
-                        addLog(window.logList, "Route from " + message.Split('#')[1] + " to " +"/"+message.Split('#')[2], Constants.LOG_INFO);
-                        break;
+                    addLog(window.logList, "Routing...", Constants.LOG_INFO);
+                    NetworkConnection nc = networkCallController.CallRequest(callerId, callingId, Convert.ToInt32(args[4]));
+                    string traceroute ="";
+                    
+                    for(int i=0; i<nc.Path.Count; i++)
+                        traceroute += nc.Path[i].SourceRouting + "##" + nc.Path[i].TargetRouting + "->";
+                    addLog(window.logList, "Traceroute: " + traceroute, Constants.LOG_INFO);            
                 }
+
+                else
+                    addLog(window.logList, "Unknown called client", Constants.LOG_ERROR);
             }
-            catch { }
+           
         }
-        private void nameCastReceived(string message) { }
+        private void nameCastReceived(string message) 
+        {
+            string[] czesci = message.Split('%');
+            addLog(window.logList, "New Dir registration " + czesci[0] + " " + czesci[1], Constants.LOG_INFO);
+            networkCallController.DirectoryRegistration(czesci[0], Convert.ToInt32(czesci[1]));
+        }
         private void callCoordinationReceived(string message) { }
         private void callRequestReceived(string message) { }
         #endregion

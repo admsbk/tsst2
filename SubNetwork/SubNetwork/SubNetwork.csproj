@@ -34,13 +34,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevExpress.Data.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Mvvm.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Printing.v14.2.Core, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Xpf.Core.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Xpf.Docking.v14.2, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Xpf.Layout.v14.2.Core, Version=14.2.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="GraphSharp">
       <HintPath>..\..\lib\GraphSharp.dll</HintPath>
     </Reference>
     <Reference Include="GraphSharp.Controls">
       <HintPath>..\..\lib\GraphSharp.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="networkLibrary">
+    <Reference Include="networkLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\networkLibrary\networkLibrary\bin\Debug\networkLibrary.dll</HintPath>
     </Reference>
     <Reference Include="QuickGraph">
@@ -71,6 +78,9 @@
     </ApplicationDefinition>
     <Compile Include="CC.cs" />
     <Compile Include="Egde.cs" />
+    <Compile Include="Head.xaml.cs">
+      <DependentUpon>Head.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Manager.cs" />
     <Compile Include="NetworkConnection.cs" />
     <Compile Include="RC.cs" />
@@ -79,6 +89,10 @@
     <Compile Include="TopologyView.xaml.cs">
       <DependentUpon>TopologyView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Head.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -113,6 +127,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Properties\Licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

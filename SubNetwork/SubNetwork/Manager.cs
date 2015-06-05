@@ -58,9 +58,60 @@ namespace SubNetwork
         public NCC CallController { get; set; }
         private LRM lrm;
 
-        private networkLibrary.transportClient socket;
-        private networkLibrary.transportClient.NewMsgHandler msgHandler;
-        private networkLibrary.transportClient.OnNewRemoteClient clientHandler;
+        public void Init(LRM linkResourceManager)
+        {
+            lrm = linkResourceManager;
+            this.CallController = new NCC(this, linkResourceManager);
+        }
+
+        public void newNodeConnected(string id, string name, string type)
+        {
+            Node node = new Node();
+            node.tnode = new Topology.Node();
+            node.Id = Int32.Parse(id);
+            node.Name = name.Split('@')[0];
+            node.Type = type;
+            
+            nodes.Add(node.Id, node);
+            topology.Clear();
+            foreach (KeyValuePair<int, Node> n in nodes)
+            {
+                //AddLink(n.Value);
+                topology.AddVertex(n.Value.tnode);
+            }
+            foreach (KeyValuePair<int, Node> n in nodes)
+            {
+                AddLink(n.Value);
+                //topology.AddVertex(n.Value.tnode);
+            }   
+        }
+
+        public void AddLink(Node sourceNode)
+        {
+            if (nodes.ContainsKey(sourceNode.Id))
+            {
+                Dictionary<string, SNPLink> polaczenia = new Dictionary<string, SNPLink>();
+                polaczenia = lrm.getLinks();
+                
+                foreach (KeyValuePair<string, SNPLink> entry in polaczenia)
+                {
+                    string pattern = @"\d+";
+                    Match match = Regex.Match(entry.Value.nodeDst, pattern);
+                    if (entry.Value.nodeSrc == sourceNode.Name)
+                    {
+                        if (nodes.ContainsKey(Convert.ToInt32(match.Value)))
+                            topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
+                                nodes[Convert.ToInt32(match.Value)].tnode, entry.Value.portSrc,
+                                entry.Value.portDst, 140));
+                    }
+                    else if (entry.Value.nodeDst == sourceNode.Name)
+                        if (nodes.ContainsKey(Convert.ToInt32(match.Value)))
+                            topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
+                                nodes[Convert.ToInt32(match.Value)].tnode, entry.Value.portSrc,
+                                entry.Value.portDst, 140));
+                }
+            }
+        }
 
 
         /*
@@ -75,9 +126,9 @@ namespace SubNetwork
                 else
                     return 0;
             }
-        }*/
+        }
         public int CCPort { get { return CallController.Port; } }
-
+        */
         public void Reset()
         {
             foreach (Node node in nodes.Values)
@@ -87,31 +138,6 @@ namespace SubNetwork
             nodes.Clear();
             topology.Clear();
         }
-
-        public void Init(LRM linkResourceManager)
-        {
-            lrm = linkResourceManager;
-            this.CallController = new NCC(this, linkResourceManager);
-        }
-
-        public void newNodeConnected(string id, string name, string type)
-        {
-            Node node = new Node();
-            node.tnode = new Topology.Node();
-            node.Id = Int32.Parse(id);
-            node.Name = name.Split('@')[0];
-            node.Type = type;
-            topology.AddVertex(node.tnode);
-            nodes.Add(node.Id, node);
-            foreach (KeyValuePair<int, Node> n in nodes)
-            {
-                AddLink(n.Value);
-            }
-            //Console.WriteLine(e.StackTrace);
-            
-        }
-
-
 
         // pobranie listy dostepnych elementow
         public List<string> GetElements()
@@ -301,37 +327,7 @@ public Routing GetRouting(int id)
             get { return nodes.Count; }
         }
 
-        
-        public void AddLink(Node sourceNode)
-        {
-            if (nodes.ContainsKey(sourceNode.Id))
-            {
-                //string port = Get(link.EndNode, "PortsIn." + link.EndPort + "._port");
-                //Set(link.StartNode, "PortsOut." + link.StartPort + "._port", port);
-                //Set(link.StartNode, "PortsOut." + link.StartPort + ".Connected", "True");
 
-                Dictionary<string, SNPLink> polaczenia = new Dictionary<string, SNPLink>();
-                    polaczenia = lrm.getLinks();
-
-                foreach (KeyValuePair<string, SNPLink> entry in polaczenia)
-                {
-                    string pattern = @"\d+";
-                    Match match = Regex.Match(entry.Value.nodeDst, pattern);
-                    if (entry.Value.nodeSrc == sourceNode.Name)
-                    {
-                        if (nodes.ContainsKey(Convert.ToInt32(match.Value)))
-                            topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
-                                nodes[Convert.ToInt32(match.Value)].tnode, entry.Value.portSrc,
-                                entry.Value.portDst, 10));
-                    }
-                    else if (entry.Value.nodeDst == sourceNode.Name)
-                        if (nodes.ContainsKey(Convert.ToInt32(match.Value)))
-                            topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
-                                nodes[Convert.ToInt32(match.Value)].tnode, entry.Value.portSrc,
-                                entry.Value.portDst, 10));
-                }
-            }
-        }
 
         public int GetFreeId()
         {

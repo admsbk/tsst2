@@ -14,6 +14,7 @@ namespace ClientNode
     class Client
     {
         private transportClient client;
+        public string networkController;
         private Config conf;
         private Grid chat;
         private TextBlock status;
@@ -49,6 +50,7 @@ namespace ClientNode
                 this.CloudIP = conf.config[1];
                 this.CloudPort = conf.config[2];
                 this.name = conf.config[3];
+                this.networkController = conf.config[4];
                 this.portsIn = conf.portsIn;
                 this.portsOut = conf.portsOut;
 

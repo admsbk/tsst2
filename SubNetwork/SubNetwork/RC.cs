@@ -99,24 +99,28 @@ namespace SubNetwork
                     return false;*/
                 string[] srcrt;
                 string[] trgrt;
+                int i = 0;
                 do
                 {
                     srcrt = e.SourceRouting.Split(':'); // [0] -> Port, [1] -> Slot
                     trgrt = e.TargetRouting.Split(':');
                     if (srcrt[1] == "" && trgrt[1] == "")
-                        srcrt[1] = trgrt[1] = rand();
-                    /*
-                    if (srcrt[2] == "" && trgrt[2] == "")
-                        srcrt[2] = trgrt[2] = rand();*/
+                    {
+                        srcrt[1] = rand();
+                        trgrt[1] = rand();
+                    }
+                    i++;
                 } while (
-                    lrm.isAvailable("1", "2")
-
+                    !lrm.isAvailable(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(srcrt[1])) &&
+                    !lrm.isAvailable(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(trgrt[1])) &&
+                    i<3
+                    
                 /*
                     !doIHaveFreePorts(manager.Get(e.Source.Id, "PortsOut." + srcrt[0] + ".Available." + srcrt[1] + "." + srcrt[2])) ||
                     !doIHaveFreePorts(manager.Get(e.Target.Id, "PortsIn." + trgrt[0] + ".Available." + trgrt[1] + "." + trgrt[2]))*/
                     );
-                e.SourceRouting = srcrt[0] + ":" + srcrt[1] + ":" + srcrt[2];
-                e.TargetRouting = trgrt[0] + ":" + trgrt[1] + ":" + trgrt[2];
+                e.SourceRouting = srcrt[0] + ":" + srcrt[1];
+                e.TargetRouting = trgrt[0] + ":" + trgrt[1];
                 ss.vcivpiList.Add(VpiVci);
 
             }
@@ -136,7 +140,7 @@ namespace SubNetwork
         private String rand()
         {
 
-            int num = random.Next() % 100;
+            int num = random.Next() % 3;
             return Convert.ToString(num);
         }
 

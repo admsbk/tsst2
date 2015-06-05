@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Node Id="NetworkNode5" CloudHost="localhost" CloudPort="3333" ManagerHost="localhost" ManagerPort="4444">
+<Node Id="NetworkNode5" CloudHost="localhost" CloudPort="3333" ManagerHost="localhost" ManagerPort="4444" NetworkController="NCC1">
   <Ports>
       <Port Id="P1" />
 	  <Port Id="P2" />

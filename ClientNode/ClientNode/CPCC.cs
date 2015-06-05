@@ -16,8 +16,9 @@ namespace ClientNode
         private Dictionary<string, string> peers;
         private string myName;
         private string myId;
+        public string nc;
 
-        public CPCC(Logs logWindow, string ip, string port, string myName, string myId)
+        public CPCC(Logs logWindow, string ip, string port, string myName, string myId, string networkController)
         {
             this.signalizationNetwork = new transportClient(ip, port);
             this.logs = logWindow;
@@ -25,9 +26,10 @@ namespace ClientNode
             signalizationNetwork.OnNewMessageRecived += msgListener;
             this.myName = myName;
             this.myId = myId;
+            this.nc = networkController;
             sendMessage(myId + "@" + "CallControll"+"#");
             Thread.Sleep(100);
-            sendMessage("NCC1@CallControll#MyParams"+myId+"#");
+            sendMessage(nc+"@CallControll#MyParams"+myId+"#");
             logs.addLog("Service started correctly", true, Constants.LOG_INFO);
         }
 
@@ -37,7 +39,8 @@ namespace ClientNode
         }
         private void onNewMessage(object a, MessageArgs e)
         {
-
+            logs.addLog(e.message, true, Constants.LOG_INFO, true);
+            parseMsgFromNCC(e.message);
         }
 
         public void sendMessage(string msg)
@@ -47,6 +50,9 @@ namespace ClientNode
 
         public void parseMsgFromNCC(string signal)
         {
+            
+
+            /*
             if (signal.Contains(' '))
             {
                 string[] words = signal.Split(' ');
@@ -103,7 +109,7 @@ namespace ClientNode
                         }
                         break;
                 }
-            }
+            }*/
         }
 
         public void callRequest(string name, string capacity)

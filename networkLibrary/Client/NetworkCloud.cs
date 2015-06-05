@@ -174,8 +174,11 @@ namespace Cloud
                     try
                     {
                         string[] getNextNode = e.message.Split('#');
-                        server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + getNextNode[1]);
-                        addLog(this.logs, Constants.FORWARD_MESSAGE + " " + getSenderId + "%" + getNextNode[1], Constants.LOG_INFO);
+                        string pdu = "";
+                        for (int i = 1; i < getNextNode.Length; i++)
+                            pdu += "#"+ getNextNode[i];
+                        server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + pdu);
+                        addLog(this.logs, Constants.FORWARD_MESSAGE + " " + getSenderId + "%" + pdu, Constants.LOG_INFO);
                     }
                     catch
                     {

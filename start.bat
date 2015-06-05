@@ -7,7 +7,7 @@ set/p "ClientNode=>>"
 echo NetworkNode
 set/p "NetworkNode=>>"
 
-START SubNetwork\SubNetwork\bin\Debug\SubNetwork.exe Config/DomainController/DC1.xml Config/NetworkTopology.xml
+START SubNetwork\SubNetwork\bin\Debug\SubNetwork.exe Config/NetworkTopology.xml Config/DomainController/DC1.xml Config/DomainController/DC2.xml 
 START networkLibrary\Client\bin\Debug\Client.exe Config/NetworkTopology.xml
 START NetworkManager\NetworkManager\bin\Debug\NetworkManager.exe Config/ManagerConfig.xml
 

@@ -37,6 +37,7 @@ namespace NetworkNode
         string CloudIP { get; set; }
         string CloudPort { get; set; }
         string NodeId { get; set; }
+        string networkController { get; set; }
         public List<string> portsInTemp { get; set; }
         public List<string> portsOutTemp { get; set; }
         public List<Port> portsIn = new List<Port>();
@@ -197,7 +198,7 @@ namespace NetworkNode
                 cloud.sendMessage(this.NodeId + "#");
                 signalizationNetwork.sendMessage(this.NodeId + "@CallControll#");
                 Thread.Sleep(500);
-                signalizationNetwork.sendMessage("NCC1@CallControll#MyParams#" + this.NodeId);
+                signalizationNetwork.sendMessage(this.networkController+"@CallControll#MyParams#" + this.NodeId);
 
 
                 addLog(logs, Constants.SERVICE_START_OK, Constants.LOG_INFO);
@@ -363,6 +364,7 @@ namespace NetworkNode
                 this.CloudPort = conf.config[2];
                 this.ManagerIP = conf.config[3];
                 this.ManagerPort = conf.config[4];
+                this.networkController = conf.config[5];
                 this.portsInTemp = conf.portsIn;
                 this.portsOutTemp = conf.portsOut;
 

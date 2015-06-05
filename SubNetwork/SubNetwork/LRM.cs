@@ -32,13 +32,28 @@ namespace SubNetwork
                 {
                     if (link.Count > 4)
                     {
-                        if (domain == link[5])
+                        if (domain == link[5] && domain == link[6])
                         {
                             //linkConnections.Add(link[0], new Topology.Link())
                             SNPLink l = new SNPLink(link.ElementAt(1), link.ElementAt(2), link.ElementAt(3), link.ElementAt(4));
                             resources.Add(link[0], l);
                             links.Items.Add(new SNPLink(link.ElementAt(1), link.ElementAt(2), link.ElementAt(3), link.ElementAt(4)));
                         }
+
+                        else if (domain == link[5])
+                        {
+                            SNPLink l = new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), "");
+                            resources.Add(link[0], l);
+                            links.Items.Add(new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), ""));
+                        }
+
+                        else if (domain == link[6])
+                        {
+                            SNPLink l = new SNPLink(link.ElementAt(5), link.ElementAt(2), "", link.ElementAt(4));
+                            resources.Add(link[0], l);
+                            links.Items.Add(new SNPLink(link.ElementAt(5), link.ElementAt(2), "", link.ElementAt(4)));
+                        }
+                        
                     }
                 }
             }
@@ -61,8 +76,14 @@ namespace SubNetwork
             //resources.Add(subConnection, new SNPLink(portIn, portOut));
         }
 
-        public bool isAvailable(string name, string slot)
+        public bool isAvailable(string namesrc, string namedst, int slot)
         {
+            foreach (KeyValuePair<string, SNPLink> entry in resources)
+            {
+                if (entry.Value.nodeSrc == namesrc && entry.Value.nodeDst == namedst)
+                    return entry.Value.slotFree(slot);
+            }
+            
             return false;
         }
 
@@ -78,7 +99,7 @@ namespace SubNetwork
         public string nodeSrc { get; set; }
         public string nodeDst { get; set; }
 
-        private bool isBusy;
+        private bool[] isBusy;
 
         public SNPLink(string nodeIn, string nodeOut, string portIn, string portOut)
         {
@@ -86,17 +107,17 @@ namespace SubNetwork
             this.portDst = portOut;
             this.nodeSrc = nodeIn;
             this.nodeDst = nodeOut;
-            isBusy = false;
+            isBusy = new bool[3];
+            for (int i = 0; i < isBusy.Length; i++)
+                isBusy[i] = false;
         }
 
-        public bool busy()
+        public bool slotFree(int index)
         {
-            if (isBusy == true)
-                return true;
-            else
-                return false;
+            return !isBusy[index];
         }
 
+        /*
         public bool requestLink()
         {
             if (!isBusy)
@@ -113,6 +134,6 @@ namespace SubNetwork
         public void releaseLink()
         {
             isBusy = false;
-        }
+        }*/
     }
 }

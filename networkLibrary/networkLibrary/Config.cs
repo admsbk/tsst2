@@ -12,6 +12,9 @@ namespace networkLibrary
         public List<string> config { get; set; }
         public List<string> portsIn { get; set; }
         public List<string> portsOut { get; set; }
+        public List<string> neighbours { get; set; }
+        public List<string> parent { get; set; }
+        public List<string> child { get; set; }
         public Dictionary<string, string> switchTable { get; set; }
         public Dictionary<string, string> controlConnection { get; set; }
         public List<List<string>> links;
@@ -24,6 +27,10 @@ namespace networkLibrary
             switchTable = new Dictionary<string, string>();
             controlConnection = new Dictionary<string, string>();
             links = new List<List<string>>();
+            neighbours = new List<string>();
+            parent = new List<string>();
+            child = new List<string>();
+
             
             XmlDocument xml = new XmlDocument();
             xml.Load(path);
@@ -44,6 +51,7 @@ namespace networkLibrary
                     {
                         config.Add(xnode.Attributes[Constants.MANAGER_IP].Value);
                         config.Add(xnode.Attributes[Constants.MANAGER_PORT].Value);
+                        config.Add(xnode.Attributes[Constants.NETWORK_CONTROLLER].Value);
                         readPorts(xml, Constants.INPUT_PORT, portsIn);
                         readPorts(xml, Constants.OUTPUT_PORT, portsOut);
                     }
@@ -56,14 +64,27 @@ namespace networkLibrary
                     if (elementType == Constants.Client)
                     {
                         config.Add(xnode.Attributes[Constants.CLIENT_NAME].Value);
+                        config.Add(xnode.Attributes[Constants.NETWORK_CONTROLLER].Value);
                         readPorts(xml, Constants.INPUT_PORT, portsIn);
                         readPorts(xml, Constants.OUTPUT_PORT, portsOut);
                     }
                     if (elementType == Constants.AD)
                     {
                         config.Add(xnode.Attributes[Constants.DOMAIN].Value);
+                        readNCCs(xml, Constants.NETWORK_NEIGHBOUR, neighbours);
+                        readNCCs(xml, Constants.PARENT, parent);
+                        readNCCs(xml, Constants.CHILD, child);
+
                     }
                 }
+            }
+        }
+
+        private void readNCCs(XmlDocument xml, string attribute, List<string> listToWrite)
+        {
+            foreach (XmlNode xnode in xml.SelectNodes(attribute))
+            {
+                listToWrite.Add(xnode.Attributes[Constants.ID].Value);
             }
         }
 

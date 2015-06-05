@@ -13,14 +13,16 @@ namespace SubNetwork
     /// </summary>
     public partial class App : Application
     {
-        public static string partialPathToConfig;
+        public static string[] partialPathToConfigs;
         public static string partialPathToTopology;
         void App_Startup(object sender, StartupEventArgs e)
         {
             try
             {
-                partialPathToConfig = Environment.GetCommandLineArgs()[1];
-                partialPathToTopology = Environment.GetCommandLineArgs()[2];
+                partialPathToConfigs = new string[Environment.GetCommandLineArgs().Length - 2];
+                partialPathToTopology = Environment.GetCommandLineArgs()[1];
+                for (int i = 2; i < partialPathToConfigs.Length+2; i++ )
+                    partialPathToConfigs[i-2] = Environment.GetCommandLineArgs()[i];
             }
             catch
             {

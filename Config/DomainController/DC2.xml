@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Node Id="NCC2" CloudHost="localhost" CloudPort="3333">
-  <Ports>
-
-  </Ports>
-</Node>
+<DomainController Id="NCC2" CloudHost="localhost" CloudPort="3333" Domain="Domain2">
+  <Neighbours>
+		<Kumpel Id="NCC1"/>
+  </Neighbours>
+  <Parent>
+  </Parent>
+  <Child>
+  </Child>
+</DomainController>

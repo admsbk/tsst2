@@ -67,7 +67,7 @@ namespace ClientNode
         private void startService()
         {
             client.startService();
-            cpcc = new CPCC(log, client.CloudIP, client.CloudPort, client.name, client.nodeName);
+            cpcc = new CPCC(log, client.CloudIP, client.CloudPort, client.name, client.nodeName, client.networkController);
             
         }
 
@@ -113,7 +113,7 @@ namespace ClientNode
         private void CallingButton_Click(object sender, RoutedEventArgs e)
         {
             string callingName = this.CallName.Text;
-            cpcc.sendMessage("NCC1@CallControll#CallRequest#" + client.name +"#" + callingName);
+            cpcc.sendMessage(cpcc.nc+"@CallControll#CallRequest#" + client.name +"#" + callingName+"#34");
             //Proba polaczenia (tylko do kogo? NM?)
 
             this.chatBox.IsEnabled = true;
