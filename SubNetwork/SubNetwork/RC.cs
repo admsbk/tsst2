@@ -13,13 +13,15 @@ namespace SubNetwork
 
         private Manager manager;
         private LRM lrm;
+        private CC ConnectionController;
         private String strDebug = "";
         private Random random = new Random();
 
-        public RC(Manager manager, LRM linkResourceManager) 
+        public RC(Manager manager, LRM linkResourceManager, CC cc) 
         {
             this.manager = manager;
             this.lrm = linkResourceManager;
+            this.ConnectionController = cc;
             //musi byc kopiowany, bo jak porty beda zajete to trzeba bedzie usunac dana krawedz
 
         }
@@ -51,9 +53,9 @@ namespace SubNetwork
             public SetupStore() { }
         }
 
-        public NetworkConnection setupConnection(int src, int trg, int connectN, int requieredCapacity)
+        public NetworkConnection assignRoute(int src, int trg, int connectN, int requieredCapacity)
         {
-            RoutingGraph ownTopology = RoutingGraph.MapTopology(manager.Topology, manager.VirtualPaths, requieredCapacity);
+            RoutingGraph ownTopology = RoutingGraph.MapTopology(manager.Topology, ConnectionController.VirtualPaths, requieredCapacity);
             SetupStore ss = new SetupStore(src, trg, ownTopology, connectN, requieredCapacity);
             if (ss.ownTopology.EdgeCount != 0)
             {
@@ -77,8 +79,8 @@ namespace SubNetwork
             foreach (var e in ss.path)
             {
                 link = new LinkConnection();
-                link.SourceId = e.Source.Id;
-                link.TargetId = e.Target.Id;
+                link.SourceId = e.Source.tNode.Name;
+                link.TargetId = e.Target.tNode.Name;
                 link.SourceRouting = e.SourceRouting;
                 link.TargetRouting = e.TargetRouting;
                 link.Link = e.tLink;

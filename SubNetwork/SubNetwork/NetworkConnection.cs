@@ -8,8 +8,8 @@ namespace SubNetwork
 {
     public class LinkConnection
     {
-        public int SourceId;
-        public int TargetId;
+        public string SourceId;
+        public string TargetId;
         public string SourceRouting; // Port:Vpi:Vci
         public string TargetRouting; // Port:Vpi:Vci
         public Topology.Link Link;
@@ -22,11 +22,11 @@ namespace SubNetwork
         public List<LinkConnection> Path { get; private set; }
         public bool Active = false;
 
-        public List<int> Nodes
+        public List<string> Nodes
         {
             get
             {
-                List<int> nodes = new List<int>();
+                List<string> nodes = new List<string>();
                 if (Path.Count > 0)
                     nodes.Add(Path.First().SourceId);
                 foreach (var link in Path)
@@ -35,12 +35,12 @@ namespace SubNetwork
             }
         }
 
-        public int Source
+        public string Source
         {
             get { return Path.First().SourceId; }
         }
 
-        public int Target
+        public string Target
         {
             get { return Path.Last().TargetId; }
         }

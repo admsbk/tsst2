@@ -40,21 +40,10 @@ namespace ClientNode
                 item.Text = "[" + DateTime.Now.ToString("HH:mm:ss") + "] " + log;
             else
                 item.Text = log;
-            if (!anotherThread)
-            {
+
                 logsListView.Items.Add(item);
                 logsListView.Items[logsListView.Items.Count - 1].EnsureVisible();
-            }
-            else
-            {
-                logsListView.Invoke(
-                    new MethodInvoker(delegate()
-                    {
-                        logsListView.Items.Add(item);
-                        logsListView.Items[logsListView.Items.Count - 1].EnsureVisible();
-                    })
-                );
-            }
+        
         }
 
         public void addMsg(string msg, bool time, string name, bool isMe, bool anotherThread = false)

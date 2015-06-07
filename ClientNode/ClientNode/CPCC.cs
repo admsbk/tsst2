@@ -29,7 +29,7 @@ namespace ClientNode
             this.nc = networkController;
             sendMessage(myId + "@" + "CallControll"+"#");
             Thread.Sleep(100);
-            sendMessage(nc+"@CallControll#MyParams"+myId+"#");
+            sendMessage(nc+"@CallControll#MyParams#"+myId+"#");
             logs.addLog("Service started correctly", true, Constants.LOG_INFO);
         }
 
@@ -40,7 +40,8 @@ namespace ClientNode
         private void onNewMessage(object a, MessageArgs e)
         {
             logs.addLog(e.message, true, Constants.LOG_INFO, true);
-            parseMsgFromNCC(e.message);
+            string response = parseMsgFromNCC(e.message);
+            //signalizationNetwork.sendMessage(nc+"@CallControll#"+response);
         }
 
         public void sendMessage(string msg)
@@ -48,68 +49,151 @@ namespace ClientNode
             signalizationNetwork.sendMessage(msg);
         }
 
-        public void parseMsgFromNCC(string signal)
+        public string parseMsgFromNCC(string query)
         {
-            
-
-            /*
-            if (signal.Contains(' '))
+            string[] command = query.Split('#')[1].Split(' ');
+            string response = "";
+            if (command[0] == "ping")
             {
-                string[] words = signal.Split(' ');
-                Console.WriteLine(signal);
-                switch (words[0])
+                response += "pong";
+            }
+            else if (command[0] == "get")
+            {
+                if (command[1] == "log" && command.Length == 3)
                 {
-                    //CALL_ACCEPT SRC_NET_NAME DST_NET_NAME SRC_NAME
-                    case Constants.PARSER_CALL_ACCEPT:
-                        Console.WriteLine("WORDS2: " + words[2]);
-                        Console.WriteLine("MYID: " + myId);
-                        if (words[2].Equals(myId))
-                        {
-                            logs.addLog("<" + words[3] + "> " + Constants.CPCC_CALL_ACCEPT, true, Constants.LOG_INFO, true);
-                            //addCall(words[3]);
-                        }
-                        break;
-                    //CALL_TEARDOWN SRC_NET_NAME DST_NET_NAME CAUSE[0 - OK, 1 - LOST] SRC_NAME DST_NAME
-                    case Constants.PARSER_CALL_TEARDOWN:
-                        if (words[2].Equals(myId))
-                        {
-                            if (words[3].Equals("0"))
-                            {
-                                logs.addLog("<" + words[4] + "> " + Constants.CPCC_TEARDOWN_0, true, Constants.LOG_INFO, true);
-                                //deleteCall(words[4]);
-                            }
-                            else
-                            {
-                                logs.addLog("<" + words[1] + "> " + Constants.CPCC_TEARDOWN_1, true, Constants.LOG_ERROR, true);
-                                logs.addLog("<" + words[1] + "> " + Constants.CPCC_RECONNECTING, true, Constants.LOG_INFO, true);
-                                //callRequest(words[1], peers[words[1]]);
-                            }
-                        }
-                        break;
-                    //CALL_REQUEST_RESPONSE SRC_NET_NAME DST_NET_NAME RESPONSE[0 - OK, 1-AUTH FAILED, 2-NET FULL, 3-USER NOT FOUND] DST_NAME 
-                    case Constants.PARSER_CALL_REQUEST_RESPONSE:
-                        if (words[1].Equals(myId))
-                        {
-                            switch (words[3])
-                            {
-                                case "0":
-                                    logs.addLog("<" + words[4] + "> " + Constants.CPCC_CALL_REQUEST_0, true, Constants.LOG_INFO, true);
-                                    //addCall(words[4]);
-                                    break;
-                                case "1":
-                                    logs.addLog("<" + words[4] + "> " + Constants.CPCC_CALL_REQUEST_1, true, Constants.LOG_ERROR, true);
-                                    break;
-                                case "2":
-                                    logs.addLog("<" + words[4] + "> " + Constants.CPCC_CALL_REQUEST_2, true, Constants.LOG_ERROR, true);
-                                    break;
-                                case "3":
-                                    logs.addLog("<" + words[4] + "> " + Constants.CPCC_CALL_REQUEST_3, true, Constants.LOG_ERROR, true);
-                                    break;
-                            }
-                        }
-                        break;
+                    int n;
+                    try { n = Int32.Parse(command[2]); }
+                    catch (FormatException) { n = 0; }
+                    /*
+                    if (n == 0)
+                        return Serial.SerializeObject(node.Log);
+                    else
+                        return Serial.SerializeObject(new Log(node.Log, n));*/
                 }
-            }*/
+                if (command.Length != 2)
+                    return response;
+                /*
+                if (command[1] == "config")
+                   /return Serial.SerializeObject(config);
+                if (command[1] == "routing")
+                    return Serial.SerializeObject(GetRoutingTable());*
+                response += "getresp " + command[1];
+                string[] param = command[1].Split('.');
+                if (param[0] == "type")
+                    response += " Sink";
+                if (param[0] == "ID")
+                    response += " " + node.Id;
+                else if (param[0] == "Name")
+                    response += " " + node.Name;
+                else if (param[0] == "PortsIn")
+                {
+                    if (param.Length != 3 && param.Length != 5)
+                        return response;
+                    if (param[2] == "Open")
+                        response += " " + node.PortIn.Open;
+                    else if (param[2] == "Connected")
+                        response += " " + node.PortIn.Connected;
+                    else if (param[2] == "_port")
+                        response += " " + node.PortIn.TcpPort;
+                    else if (param[2] == "Available")
+                    {
+                        try
+                        {
+                            int n = Int32.Parse(param[1]);
+                            int vpi = Int32.Parse(param[3]);
+                            int vci = Int32.Parse(param[4]);
+                            response += " " + CheckPortIn(n, vpi, vci);
+                        }
+                        catch (FormatException) { return response; }
+                    }
+                }*/
+            }
+            else if (command[0] == "set")
+            {/*
+                if (command.Length != 3)
+                    return response;
+                response += "setresp " + command[1];
+                string[] param = command[1].Split('.');
+                if (param[0] == "ID")
+                    response += " " + node.Id; // parametr niezmienny
+                else if (param[0] == "Name")
+                {
+                    node.Name = command[2];
+                    response += " " + node.Name;
+                }
+                else if (param[0] == "PortsIn")
+                {
+                    if (param.Length != 3)
+                        return response;
+                    if (param[2] == "Open")
+                        response += " " + node.PortIn.Open; // póki co niezmienne
+                    else if (param[2] == "Connected")
+                        response += " " + node.PortIn.Connected; // niezmienne
+                    else if (param[2] == "_port")
+                        response += " " + node.PortIn.TcpPort; // niezmienne
+                }*/
+            }
+            else if (command[0] == "rtadd")
+            {
+                response += "rtaddresp ";
+                if (command.Length == 3)
+                {
+                    response += command[1] + " " + command[2];
+                    try
+                    {
+                        //RoutingEntry incoming = new RoutingEntry(command[1]);
+                        //if (1 > incoming.Port)
+                        //{
+                          //  node.Receiver.Sources.Add(incoming, command[2]);
+                            response += " ok";
+                        //}
+                        //else
+                          //  response += " fail";
+                    }
+                    catch (FormatException) { response += " fail"; }
+                    catch (ArgumentException) { response += " fail"; }
+                }
+                    
+                else if (command.Length == 4)
+                {
+                    response += command[1] + " " + command[2] + " " + command[3];
+                    try
+                    {
+                       // RoutingEntry incoming = new RoutingEntry(command[1]);
+                        //if (1 > incoming.Port)
+                        //{
+                          //  node.Receiver.Sources.Add(incoming, command[3]);
+                            response += " ok";
+                        //}
+                        //else
+                          //  response += " fail";
+                    }
+                    catch (ArgumentException)
+                    {
+                        response += " fail";
+                    }
+                }
+            }
+            else if (command[0] == "rtdel")
+            {
+                response += "rtdelresp ";
+                if (command.Length != 2)
+                    return response;
+                response += command[1];
+                try
+                {
+                    //if (node.Receiver.Sources.Remove(new RoutingEntry(command[1])))
+                        response += " ok";
+                    //else
+                        //response += " fail";
+                }
+                catch (FormatException) { response += " fail"; }
+            }
+            else
+                response = command[0] + "resp";
+            return response;
+
+           
         }
 
         public void callRequest(string name, string capacity)

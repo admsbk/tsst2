@@ -20,6 +20,9 @@ namespace SubNetwork
         }
         private Dictionary<string, DirectoryEntry> Directory = new Dictionary<string, DirectoryEntry>();
         private Manager manager;
+        private CC ConnectionController;
+        private transportClient network;
+
         private RC rc { get; set; }
         private RC routingController { get; set; }
         /*
@@ -35,13 +38,16 @@ namespace SubNetwork
             }
         }*/
 
-        public NCC(Manager manager, LRM linkResourceManager)
+        public NCC(Manager manager, LRM linkResourceManager, networkLibrary.transportClient client)
         {
             this.manager = manager;
-            this.rc = new RC(manager, linkResourceManager);
+            this.network = client;
+            ConnectionController = new CC(this.network);
+            this.rc = new RC(manager, linkResourceManager, ConnectionController);
+            
         }
 
-
+        /*
         private void ProcessQuery(string recv, DirectoryEntry client)
         {
             string[] query = recv.Split(' ');
@@ -107,7 +113,7 @@ namespace SubNetwork
                     || client.Id == manager.Connections[connectionId].Target) // węzeł korzystający z niego
                     CallTeardown(manager.Connections[connectionId], client.Name);
             }
-        }
+        }*/
 
         public void DirectoryRegistration(string name, int id)
         {
@@ -131,11 +137,11 @@ namespace SubNetwork
 
         public NetworkConnection CallRequest(int sourceId, int targetId, int cap)
         {
-            NetworkConnection connection = rc.setupConnection(sourceId, targetId, manager.GetFreeId(), cap);
+            NetworkConnection connection = rc.assignRoute(sourceId, targetId, ConnectionController.GetFreeId(), cap);
             if (connection != null)
             {
-                manager.AddConnection(connection);
-                manager.Connect(connection.Id);
+                ConnectionController.AddConnection(connection);
+                ConnectionController.ConnectionRequest(connection.Id);
             }
             return connection;
         }

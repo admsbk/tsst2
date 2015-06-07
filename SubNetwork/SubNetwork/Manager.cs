@@ -49,19 +49,15 @@ namespace SubNetwork
         private Topology topology = new Topology(); // topologia sieci
         public Topology Topology
         { get { return topology; } }
-        private Dictionary<int, STM> virtualPaths = new Dictionary<int, STM>();
-        public Dictionary<int, STM> VirtualPaths
-        { get { return virtualPaths; } }
-        private Dictionary<int, NetworkConnection> connections = new Dictionary<int, NetworkConnection>();
-        public Dictionary<int, NetworkConnection> Connections
-        { get { return connections; } }
+
+
         public NCC CallController { get; set; }
         private LRM lrm;
 
         public void Init(LRM linkResourceManager)
         {
             lrm = linkResourceManager;
-            this.CallController = new NCC(this, linkResourceManager);
+            //this.CallController = new NCC(this, linkResourceManager);
         }
 
         public void newNodeConnected(string id, string name, string type)
@@ -171,55 +167,9 @@ namespace SubNetwork
         }
 
 
-        public List<string> GetConnections()
-        {
-            List<string> ret = new List<string>();
-            int[] keys = new int[connections.Count];
-            connections.Keys.CopyTo(keys, 0);
-            Array.Sort(keys);
-            foreach (int key in keys)
-            {
-                string item = "[" + key + "] " + nodes[connections[key].Source].Name + " --{" + connections[key].Path.Count + "}--> " + nodes[connections[key].Target].Name;
-                ret.Add(item);
-            }
-            return ret;
-        }
+  
 
-        public List<string> GetVPaths()
-        {
-            List<string> ret = new List<string>();
-            int[] keys = new int[virtualPaths.Count];
-            virtualPaths.Keys.CopyTo(keys, 0);
-            Array.Sort(keys);
-            foreach (int key in keys)
-            {
-                string item = "[" + key + "] " + virtualPaths[key].Source.Name + " -{" + virtualPaths[key].Path.Count + "}-> " + virtualPaths[key].Target.Name;
-                ret.Add(item);
-            }
-            return ret;
-        }
 
-        public string GetDetails(int id)
-        {
-            string ret = "";
-            if (virtualPaths.ContainsKey(id))
-            {
-                foreach (var link in virtualPaths[id].Path)
-                {
-                    string item = "[" + link.SourceId + "]:" + link.SourceRouting + " -> [" + link.TargetId + "]:" + link.TargetRouting;
-                    ret += item + Environment.NewLine;
-                }
-            }
-            else if (connections.ContainsKey(id))
-            {
-                foreach (var link in connections[id].Path)
-                {
-                    string item = "[" + link.SourceId + "]:" + link.SourceRouting + " -> [" + link.TargetId + "]:" + link.TargetRouting;
-                    ret += item + Environment.NewLine;
-                }
-            }
-            return ret;
-        }
 
         /*
         public string Get(Socket sock, string param)
@@ -328,81 +278,6 @@ public Routing GetRouting(int id)
         }
 
 
-
-        public int GetFreeId()
-        {
-            int i = 1;
-            while (connections.ContainsKey(i) || virtualPaths.ContainsKey(i))
-                i++;
-            return i;
-        }
-
-        public bool AddPath(STM vpath)
-        {
-            string label = "";
-            string value = "";
-            foreach (var link in vpath.Path)
-            {
-                if (label != "")
-                {
-                    value = link.SourceRouting;
-                    //AddRouting(link.SourceId, label, value, vpath.Id);
-                }
-                label = link.TargetRouting;
-            }
-            virtualPaths.Add(vpath.Id, vpath);
-            return true;
-        }
-
-        public void AddConnection(NetworkConnection connection)
-        {
-            connections.Add(connection.Id, connection);
-        }
-
-        public bool Connect(int connectionId)
-        {
-            if (!connections.ContainsKey(connectionId))
-                return false;
-            NetworkConnection connection = connections[connectionId];
-            if (!connections[connectionId].Active)
-            {
-                string label = connection.Id.ToString(); // pierwszy wpis: Id -> re
-                string value = "";
-                foreach (var link in connection.Path)
-                {
-                    value = link.SourceRouting;
-                    /*
-                    if (!AddRouting(link.SourceId, label, value, connection.Id))
-                    {   // to nie powinno się zdarzyć...
-                        Disconnect(connectionId);
-                        return false;
-                    }*/
-                    link.Link.Capacity -= connection.Capacity;
-                    label = link.TargetRouting;
-                }
-                value = connection.Id.ToString();
-                /*
-                if (!AddRouting(connection.Target, label, value, connection.Id))
-                {   // ...to także
-                    Disconnect(connectionId);
-                    return false;
-                }*/
-                connection.Active = true;
-            }
-            return connection.Active;
-        }
-
-        public void Disconnect(int connectionId)
-        {
-            NetworkConnection connection = connections[connectionId];
-            foreach (var link in connection.Path)
-            {
-                /*
-                if (RemoveRouting(link.SourceId, connection.Id))
-                    link.Link.Capacity += connection.Capacity;*/
-            }
-            //RemoveRouting(connection.Target, connection.Id);
-            connections.Remove(connectionId);
-        }
+        
     }
 }

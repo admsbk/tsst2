@@ -33,7 +33,7 @@ namespace Cloud
             InitializeComponent();
             setGraphics();
             cloud = new NetworkCloud(this.links, this.nodes, this.logList, this);
-            var path = @"Config/NetworkTopology.xml";
+            //var path = @"Config/NetworkTopology.xml";
 
 
             string conf = Cloud.App.partialPathToConfig;

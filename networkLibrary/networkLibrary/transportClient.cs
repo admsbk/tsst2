@@ -22,9 +22,6 @@ namespace networkLibrary
         public delegate void NewSignalization(object myObject, MessageArgs myArgs);
         public event NewSignalization OnNewSignalization;
 
-        public delegate void OnNewRemoteClient(object myObject, RemoteClientArgs myArgs);
-        public event OnNewRemoteClient OnNewRemoteControl;
-
         public transportClient(string ip, string port)
         {
             this.encoder = new ASCIIEncoding();
@@ -76,6 +73,7 @@ namespace networkLibrary
                 {
                     break;
                 }
+
                 string signal = encoder.GetString(message, 0, bytesRead);
                 Console.WriteLine(message);
 
@@ -108,6 +106,23 @@ namespace networkLibrary
                 byte[] buffer = encoder.GetBytes(msg);
                 stream.Write(buffer, 0, buffer.Length);
                 stream.Flush();     
+        }
+
+        public string sendControllMessage(string msg)
+        {
+
+            byte[] buffer = encoder.GetBytes(msg);
+            stream.Write(buffer, 0, buffer.Length);
+            stream.Flush();
+            //clientThread.Abort();
+            byte[] message = new byte[4096];
+            int bytesRead= stream.Read(message, 0, 4096);
+            string signal = encoder.GetString(message, 0, bytesRead);
+            /*
+            Thread.Sleep(100);
+            clientThread = new Thread(new ThreadStart(ListenForMessage));
+            clientThread.Start();*/
+            return signal;
         }
 
 
