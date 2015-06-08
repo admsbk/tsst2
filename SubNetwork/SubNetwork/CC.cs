@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace SubNetwork
 {
@@ -15,10 +19,12 @@ namespace SubNetwork
         public Dictionary<int, STM> VirtualPaths
         { get { return virtualPaths; } }
         private networkLibrary.transportClient network;
+        MainWindow wind;
 
-        public CC(networkLibrary.transportClient networkC)
+        public CC(networkLibrary.transportClient networkC, MainWindow wind)
         {
             this.network = networkC;
+            this.wind = wind;
         }
 
         public bool ConnectionRequest(int connectionId)
@@ -97,11 +103,17 @@ namespace SubNetwork
 
         public bool AddRouting(string nodeId, string label, string value, int connectionId)
         {
-
+            string command="";
             try
             {
-                Query(nodeId + "@CallControll#rtadd " + label + " " + value + " " + connectionId);
+                if (label.Contains("CP"))
+                    label = "CP.";
+                    Query(nodeId + "@CallControll#SET%" + label+"%"+value);
+                    Console.WriteLine(nodeId + "@CallControll#rtadd " + value + " "+label+" " + connectionId);
+                    Thread.Sleep(100);
+                
                 return true;
+               
             }
             catch { return false; }
             /*
@@ -237,5 +249,6 @@ namespace SubNetwork
         }
 
         void PeerCoordination() { }
+
     }
 }

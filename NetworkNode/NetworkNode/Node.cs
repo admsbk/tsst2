@@ -170,9 +170,20 @@ namespace NetworkNode
             
         }
 
-        private void newControlOrder(object a, MessageArgs e)
+        private void newControlOrder(object a, MessageArgs myArgs)
         {
-
+            //addLog(logs, Constants.NEW_MSG_RECEIVED + " " + e.message, Constants.LOG_INFO);
+            string[] check = myArgs.message.Split('%');
+            string command = check[1].Split('#')[1];
+            
+                addLog(logs, Constants.RECEIVED_FROM_MANAGER + " " + myArgs.message, Constants.LOG_INFO);
+                if (command == Constants.SET_LINK)
+                    parseOrder(command + "%" + check[2] + "%" + check[3]);
+                else if (command ==  Constants.DELETE_LINK)
+                    parseOrder(command + "%" + check[2]);
+                else if (command == Constants.SHOW_LINK)
+                    parseOrder(command + "%" + check[2]);
+             
         }
 
         public bool isConnected()

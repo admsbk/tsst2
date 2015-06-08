@@ -112,7 +112,7 @@ namespace Cloud
                 getSenderId = clientSockets.FirstOrDefault(x => x.Value == e.ID).Key;
             }
             catch { }
-            if(e.message.Contains("CP"))
+            if (e.message.Contains("CP") && !getSenderId.Contains("CallControl"))
             {   
                 addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
                     try
@@ -128,8 +128,8 @@ namespace Cloud
                         addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.message), Constants.LOG_ERROR);
                     }
             }
-            
-            else if (e.message.Split('#').Length == 1 && e.message.Split('/').Length != 2 && e.message.Split(':').Length > 1)
+
+            else if (e.message.Split('#').Length == 1 && e.message.Split('/').Length != 2 && e.message.Split(':').Length > 1 && !getSenderId.Contains("CallControl"))
             {      
                 addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
                 try
@@ -144,8 +144,8 @@ namespace Cloud
                     addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.message), Constants.LOG_ERROR);
                 }                    
             }
-         
-            else if (e.message.Split('#').Length == 1 && e.message.Split('/').Length == 2)
+
+            else if (e.message.Split('#').Length == 1 && e.message.Split('/').Length == 2 && !getSenderId.Contains("CallControl"))
             {
                 string[] receivedSlots = SynchronousTransportModule.getSlots(e.message.Split('/')[0]);
                 if (receivedSlots != null)
@@ -170,19 +170,37 @@ namespace Cloud
                 if (getSenderId.Contains("CallControl"))
                 {
                     addLog(this.logs, Constants.NEW_MSG_RECEIVED + " from " + getSenderId + " " + e.message, Constants.LOG_INFO);
-
-                    try
+                    if (getSenderId.Contains("NetworkNode") && getSenderId.Contains("rtadd"))
                     {
-                        string[] getNextNode = e.message.Split('#');
-                        string pdu = "";
-                        for (int i = 1; i < getNextNode.Length; i++)
-                            pdu += "#"+ getNextNode[i];
-                        server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + pdu);
-                        addLog(this.logs, Constants.FORWARD_MESSAGE + " " + getSenderId + "%" + pdu, Constants.LOG_INFO);
+                        try
+                        {
+                            string[] getNextNode = e.message.Split('#');
+                            string pdu = "";
+                            for (int i = 1; i < getNextNode.Length; i++)
+                                pdu += "#" + getNextNode[i];
+                            server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + pdu);
+                            addLog(this.logs, Constants.FORWARD_MESSAGE + " " + getSenderId + "%" + pdu, Constants.LOG_INFO);
+                        }
+                        catch
+                        {
+                            addLog(this.logs, Constants.UNREACHABLE_DST + " " + getSenderId, Constants.LOG_ERROR);
+                        }
                     }
-                    catch
+                    else
                     {
-                        addLog(this.logs, Constants.UNREACHABLE_DST + " " + switchBox.forwardMessage(getSenderId + "%" + e.message), Constants.LOG_ERROR);
+                        try
+                        {
+                            string[] getNextNode = e.message.Split('#');
+                            string pdu = "";
+                            for (int i = 1; i < getNextNode.Length; i++)
+                                pdu += "#" + getNextNode[i];
+                            server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + pdu);
+                            addLog(this.logs, Constants.FORWARD_MESSAGE + " " + getSenderId + "%" + pdu, Constants.LOG_INFO);
+                        }
+                        catch
+                        {
+                            addLog(this.logs, Constants.UNREACHABLE_DST + " " + getSenderId, Constants.LOG_ERROR);
+                        }
                     }
                 }
             }

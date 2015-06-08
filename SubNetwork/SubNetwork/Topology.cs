@@ -37,8 +37,8 @@ namespace SubNetwork
             public string TargetPort { get; private set; }
             public int Capacity;
             public int MaxCapacity { get; private set; }
-            public virtual string SourceRouting { get { return SourcePort + "::"; } }
-            public virtual string TargetRouting { get { return TargetPort + "::"; } }
+            public virtual string SourceRouting { get { return SourcePort + ":"; } }
+            public virtual string TargetRouting { get { return TargetPort + ":"; } }
 
             public Link(Node source, Node target, string sourcePort, string targetPort, int capacity)
                 : base(source, target)

@@ -96,15 +96,17 @@ namespace SubNetwork
                     if (entry.Value.nodeSrc == sourceNode.Name)
                     {
                         if (nodes.ContainsKey(Convert.ToInt32(match.Value)))
+                        {
                             topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
                                 nodes[Convert.ToInt32(match.Value)].tnode, entry.Value.portSrc,
                                 entry.Value.portDst, 140));
+                            
+                            topology.AddEdge(new Topology.Link(nodes[Convert.ToInt32(match.Value)].tnode, 
+                                nodes[sourceNode.Id].tnode, entry.Value.portSrc,
+                                entry.Value.portDst, 140));
+
+                        }
                     }
-                    else if (entry.Value.nodeDst == sourceNode.Name)
-                        if (nodes.ContainsKey(Convert.ToInt32(match.Value)))
-                            topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
-                                nodes[Convert.ToInt32(match.Value)].tnode, entry.Value.portSrc,
-                                entry.Value.portDst, 140));
                 }
             }
         }

@@ -121,8 +121,8 @@ namespace SubNetwork
                     !doIHaveFreePorts(manager.Get(e.Source.Id, "PortsOut." + srcrt[0] + ".Available." + srcrt[1] + "." + srcrt[2])) ||
                     !doIHaveFreePorts(manager.Get(e.Target.Id, "PortsIn." + trgrt[0] + ".Available." + trgrt[1] + "." + trgrt[2]))*/
                     );
-                e.SourceRouting = srcrt[0] + ":" + srcrt[1];
-                e.TargetRouting = trgrt[0] + ":" + trgrt[1];
+                e.SourceRouting = srcrt[0] + "." + srcrt[1];
+                e.TargetRouting = trgrt[0] + "." + trgrt[1];
                 ss.vcivpiList.Add(VpiVci);
 
             }
@@ -169,14 +169,13 @@ namespace SubNetwork
 
             }
 
-
             //var dijkstra = new DijkstraShortestPathAlgorithm<RoutingGraph.Node, RoutingGraph.Link>(ss.ownTopology, e => edgeCost[e]);
-            var dijkstra = new UndirectedDijkstraShortestPathAlgorithm<RoutingGraph.Node, RoutingGraph.Link>(ss.ownTopology, e => edgeCost[e]);
+            var dijkstra = new DijkstraShortestPathAlgorithm<RoutingGraph.Node, RoutingGraph.Link>(ss.ownTopology, e => edgeCost[e]);
             
             // Attach a Vertex Predecessor Recorder Observer to give us the paths
             //var predecessorObserver = new VertexPredecessorRecorderObserver<RoutingGraph.Node, RoutingGraph.Link>();
             //predecessorObserver.Attach(dijkstra);
-            var predecessor = new UndirectedVertexPredecessorRecorderObserver<RoutingGraph.Node, RoutingGraph.Link>();
+            var predecessor = new VertexPredecessorRecorderObserver<RoutingGraph.Node, RoutingGraph.Link>();
             predecessor.Attach(dijkstra);
             dijkstra.Compute(this.IDtoNode(ss.source, ss.ownTopology));
             IEnumerable<RoutingGraph.Link> path;

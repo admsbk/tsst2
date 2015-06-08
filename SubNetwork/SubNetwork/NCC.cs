@@ -38,11 +38,11 @@ namespace SubNetwork
             }
         }*/
 
-        public NCC(Manager manager, LRM linkResourceManager, networkLibrary.transportClient client)
+        public NCC(Manager manager, LRM linkResourceManager, networkLibrary.transportClient client, MainWindow window)
         {
             this.manager = manager;
             this.network = client;
-            ConnectionController = new CC(this.network);
+            ConnectionController = new CC(this.network, window);
             this.rc = new RC(manager, linkResourceManager, ConnectionController);
             
         }

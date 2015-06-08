@@ -76,7 +76,7 @@ namespace SubNetwork
                 msgHandler = new transportClient.NewMsgHandler(newMessageReceived);
                 signalization.OnNewMessageRecived += msgHandler;
                 signalization.sendMessage(nccname+"@CallControll"+"#");
-                networkCallController = new NCC(manager, linkResourceManager, signalization);
+                networkCallController = new NCC(manager, linkResourceManager, signalization, window);
             }
             catch 
             {
@@ -211,7 +211,7 @@ namespace SubNetwork
         #endregion
 
         #region frontend
-        private void addLog(Grid log, string message, int logType)
+        public void addLog(Grid log, string message, int logType)
         {
             var color = Brushes.Black;
 

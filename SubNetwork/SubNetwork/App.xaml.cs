@@ -13,7 +13,7 @@ namespace SubNetwork
     /// </summary>
     public partial class App : Application
     {
-        public static string[] partialPathToConfigs;
+        public static string[] partialPathToConfigs = new string[0];
         public static string partialPathToTopology;
         void App_Startup(object sender, StartupEventArgs e)
         {

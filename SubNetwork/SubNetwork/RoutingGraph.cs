@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace SubNetwork
 {
-    public class RoutingGraph : UndirectedGraph<RoutingGraph.Node, RoutingGraph.Link>
+    public class RoutingGraph : BidirectionalGraph<RoutingGraph.Node, RoutingGraph.Link>
     {
+        
         public class Node
         {
             public Topology.Node tNode { get; private set; }
