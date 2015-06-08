@@ -96,6 +96,7 @@ namespace SubNetwork
             try
             {
                 Query(id + "rtadd " + label + " " + value);
+
                 return true;
             }
             catch { return false; }
@@ -108,9 +109,9 @@ namespace SubNetwork
             {
                 if (label.Contains("CP"))
                     label = "CP.";
-                    Query(nodeId + "@CallControll#SET%" + label+"%"+value);
-                    Console.WriteLine(nodeId + "@CallControll#rtadd " + value + " "+label+" " + connectionId);
-                    Thread.Sleep(100);
+                Query(nodeId + "@CallControll#SET%" + label+"%"+value);
+                Console.WriteLine(nodeId + "@CallControll#rtadd " + value + " "+label+" " + connectionId);
+                Thread.Sleep(100);
                 
                 return true;
                

@@ -110,6 +110,8 @@ namespace SubNetwork
                     {
                         srcrt[1] = rand();
                         trgrt[1] = rand();
+                        //lrm.reserve(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(srcrt[1]));
+                        //lrm.reserve(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(trgrt[1]));
                     }
                     i++;
                 } while (

@@ -102,8 +102,8 @@ namespace SubNetwork
                                 entry.Value.portDst, 140));
                             
                             topology.AddEdge(new Topology.Link(nodes[Convert.ToInt32(match.Value)].tnode, 
-                                nodes[sourceNode.Id].tnode, entry.Value.portSrc,
-                                entry.Value.portDst, 140));
+                                nodes[sourceNode.Id].tnode,
+                                entry.Value.portDst, entry.Value.portSrc, 140));
 
                         }
                     }

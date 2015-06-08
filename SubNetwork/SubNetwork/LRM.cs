@@ -87,6 +87,24 @@ namespace SubNetwork
             return false;
         }
 
+        public void reserve(string namesrc, string namedst, int slot)
+        {
+            foreach (KeyValuePair<string, SNPLink> entry in resources)
+            {
+                if (entry.Value.nodeSrc == namesrc && entry.Value.nodeDst == namedst)
+                    entry.Value.requestLink(slot);
+            }
+        }
+
+        public void release(string namesrc, string namedst, int slot)
+        {
+            foreach (KeyValuePair<string, SNPLink> entry in resources)
+            {
+                if (entry.Value.nodeSrc == namesrc && entry.Value.nodeDst == namedst)
+                    entry.Value.releaseLink(slot);
+            }
+        }
+
         public string Domain
         {
             get { return domain; }
@@ -117,12 +135,12 @@ namespace SubNetwork
             return !isBusy[index];
         }
 
-        /*
-        public bool requestLink()
+        
+        public bool requestLink(int i)
         {
-            if (!isBusy)
+            if (!isBusy[i])
             {
-                isBusy = true;
+                isBusy[i] = true;
                 return true;
             }
             else
@@ -131,9 +149,9 @@ namespace SubNetwork
             }
         }
 
-        public void releaseLink()
+        public void releaseLink(int i)
         {
-            isBusy = false;
-        }*/
+            isBusy[i] = false;
+        }
     }
 }
