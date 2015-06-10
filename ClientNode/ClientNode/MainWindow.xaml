@@ -5,55 +5,54 @@
         Icon = "./icon.ico">
 
     <Grid>
-        <GroupBox x:Name="chatBox" Header="Chat" HorizontalAlignment="Left" Height="247" Margin="10,122,0,0" VerticalAlignment="Top" Width="320" IsEnabled="False">
-            <TabControl HorizontalAlignment="Left" Height="222" Margin="0,0,-2,-2" VerticalAlignment="Bottom" Width="310">
-                <TabItem Header="Call 1">
-                    <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
+        <GroupBox x:Name="chatBox" Header="Chat" HorizontalAlignment="Left" Height="293" Margin="10,76,0,0" VerticalAlignment="Top" Width="320" IsEnabled="True">
+            <Grid HorizontalAlignment="Left" Height="227" VerticalAlignment="Top"
+		            Width="310" Margin="0,0,-2,-2">
+                <TextBox x:Name="CallName" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="157" RenderTransformOrigin="0.133,-1"/>
+                <Button x:Name="CallingButton" Content="Call" HorizontalAlignment="Left" Height="23" Margin="181,0,0,0" VerticalAlignment="Top" Width="129" RenderTransformOrigin="0.587,0.517" Click="CallingButton_Click"/>
+
+                <TabControl HorizontalAlignment="Left" Height="245" Margin="0,0,0,-46" VerticalAlignment="Bottom" Width="310">
+                    <TabItem Header="Call 1">
+                        <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
 		            Width="310" Margin="0,0,-6,-2">
-                        <Button x:Name="Button_1" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,172,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
-                        <TextBox x:Name="toSend" HorizontalAlignment="Left" Height="20" Margin="0,172,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
-                        <ScrollViewer x:Name="scroll" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Height="172">
-                            <Grid x:Name="chat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="285"/>
-                        </ScrollViewer>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Call 2">
-                    <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
+                            <Button x:Name="Button_1" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,195,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
+                            <TextBox x:Name="toSend" HorizontalAlignment="Left" Height="20" Margin="0,196,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
+                            <ScrollViewer x:Name="scroll" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Height="191">
+                                <Grid x:Name="chat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="285"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Call 2">
+                        <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
 		            Width="310" Margin="0,0,-6,-2">
-                        <Button x:Name="Button_2" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,172,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
-                        <TextBox x:Name="toSend2" HorizontalAlignment="Left" Height="20" Margin="0,172,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
-                        <ScrollViewer x:Name="scroll2" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,10,0" Height="172">
-                            <Grid x:Name="chat2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
-                        </ScrollViewer>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Call 3">
-                    <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
+                            <Button x:Name="Button_2" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,172,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
+                            <TextBox x:Name="toSend2" HorizontalAlignment="Left" Height="20" Margin="0,172,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
+                            <ScrollViewer x:Name="scroll2" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,10,0" Height="172">
+                                <Grid x:Name="chat2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Call 3">
+                        <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
 		            Width="310" Margin="0,0,-6,-2">
-                        <Button x:Name="Button_3" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,172,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
-                        <TextBox x:Name="toSend3" HorizontalAlignment="Left" Height="20" Margin="0,172,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
-                        <ScrollViewer x:Name="scroll3" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,10,0" Height="172">
-                            <Grid x:Name="chat3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
-                        </ScrollViewer>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Call 4">
-                    <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
+                            <Button x:Name="Button_3" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,172,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
+                            <TextBox x:Name="toSend3" HorizontalAlignment="Left" Height="20" Margin="0,172,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
+                            <ScrollViewer x:Name="scroll3" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,10,0" Height="172">
+                                <Grid x:Name="chat3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Call 4">
+                        <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
 		            Width="310" Margin="0,0,-6,-2">
-                        <Button x:Name="Button_4" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,172,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
-                        <TextBox x:Name="toSend4" HorizontalAlignment="Left" Height="20" Margin="0,172,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
-                        <ScrollViewer x:Name="scroll4" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,10,0" Height="172">
-                            <Grid x:Name="chat4" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
-                        </ScrollViewer>
-                    </Grid>
-                </TabItem>
-            </TabControl>
-        </GroupBox>
-        <GroupBox Header="Call" HorizontalAlignment="Left" Height="46" Margin="10,76,0,0" VerticalAlignment="Top" Width="320">
-            <Grid HorizontalAlignment="Left" Height="36" VerticalAlignment="Top"
-		            Width="310" Margin="0,0,-2,-12">
-                <TextBox x:Name="CallName" HorizontalAlignment="Left" Height="23" Margin="10,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="157" RenderTransformOrigin="0.133,-1"/>
-                <Button x:Name="CallingButton" Content="Call" HorizontalAlignment="Left" Height="23" Margin="175,0,0,0" VerticalAlignment="Top" Width="129" RenderTransformOrigin="0.587,0.517" Click="CallingButton_Click"/>
+                            <Button x:Name="Button_4" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,172,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
+                            <TextBox x:Name="toSend4" HorizontalAlignment="Left" Height="20" Margin="0,172,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
+                            <ScrollViewer x:Name="scroll4" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,10,0" Height="172">
+                                <Grid x:Name="chat4" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
             </Grid>
         </GroupBox>
         <GroupBox Header="Setup" HorizontalAlignment="Left" Height="49" Margin="10,27,0,0" VerticalAlignment="Top" Width="168">

@@ -96,46 +96,19 @@ namespace SubNetwork
             catch (SocketException) { throw new SubNetwork.Manager.NodeUnaccessibleException(); }
         }
 
-        /*
-        public string Query(int id, string query)
-        {
-            if (nodes.ContainsKey(id))
-            {
-                try
-                {
-                    nodes[id].Socket.Send(Encoding.ASCII.GetBytes(query));
-                    byte[] buffer = new byte[16 * 1024];
-                    int received = nodes[id].Socket.Receive(buffer);
-                    return Encoding.ASCII.GetString(buffer, 0, received);
-                }
-                catch (SocketException)
-                {
-                    Topology.RemoveVertex(nodes[id].tnode);
-                    nodes.Remove(id);
-                    List<int> disconnected = new List<int>();
-                    foreach (int con in connections.Keys)
-                    {
-                        if (connections[con].Nodes.Contains(id))
-                            disconnected.Add(con);
-                    }
-                    foreach (int con in disconnected)
-                        CallController.CallTeardown(connections[con], "system");
-                }
-            }
-            return "";
-        }*/
-
         #region message received methods
 
 
         private void newMessageReceived(object a, MessageArgs e) 
         {
-            
+            string[] temp = e.message.Split('#');
             addLog(window.logList, e.message, Constants.LOG_INFO);
-            if (e.message.Contains("NetworkNode"))
+            if (temp[0].Contains("NetworkNode"))
                 nodeParser(e.message);
-            else if (e.message.Contains("Client"))
-                clientParser(e.message);         
+            else if (temp[0].Contains("Client"))
+                clientParser(e.message);
+            else if (temp[0].Contains("NCC"))
+                nccParser(e.message);
         }
 
         private void nodeParser(string message) 
@@ -153,7 +126,7 @@ namespace SubNetwork
 
         private void clientParser(string message) 
         {
-            //addLog(window.logList, "Client says: " + message, Constants.LOG_INFO);
+            addLog(window.logList, "Client: " + message, Constants.LOG_INFO);
             
             if (message.Contains("MyParams"))
             {
@@ -205,7 +178,20 @@ namespace SubNetwork
                     addLog(window.logList, "Unknown called client", Constants.LOG_ERROR);
             }
 
-            else if (message.Contains("DirectoryCast"))
+            else if (message.Contains("CallCoordination"))
+            {
+                if (message.Contains("ok"))
+                    this.callCoordinationAck(message);
+                else if (message.Contains("fail"))
+                    this.callCoordinationNack(message);
+                else
+                    this.callCoordinationReceived(message);
+            }       
+        }
+
+        private void nccParser(string message)
+        {
+            if (message.Contains("DirectoryCast"))
             {
                 string[] msg = message.Split('#');
                 string pattern = @"\d+";
@@ -223,10 +209,28 @@ namespace SubNetwork
 
             else if (message.Contains("CallCoordination"))
             {
-                this.callCoordinationReceived(message);
-            }
-           
+                if (message.Contains("ok"))
+                {
+                    try
+                    {
+                        string[] msg = message.Split('#');
+
+                        signalization.sendMessage(msg[2]+"@CallControll" + "#CallCoordination#" + "#" + msg[3] + "#" + msg[4]);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Fsa");
+
+                    }
+                }
+                    
+                else if (message.Contains("fail"))
+                    this.callCoordinationNack(message);
+                else
+                    this.callCoordinationReceived(message);
+            } 
         }
+
         private void nameCastReceived(string message) 
         {
             string[] czesci = message.Split('%');
@@ -236,10 +240,35 @@ namespace SubNetwork
         private void callCoordinationReceived(string message) 
         {
             string[] subMessage = message.Split('#');
-            signalization.sendMessage(subMessage[3]+"@CallControll#CallingParty#"+subMessage[2]);
+            signalization.sendMessage(subMessage[3] + "@CallControll#CallCoordination#" + subMessage[2]);
+            this.requestsToAnswer.Add(subMessage[3] + "@CallControll#CallCoordination#" + subMessage[2], subMessage[0].Split('%')[0]);
             //signalization.sendMessage(message.Split('#')[0].Split('%')[0]+"#CallCoordinationOK");
         }
-        private void callRequestReceived(string message) { }
+
+        private void callCoordinationAck(string message)
+        {
+            try
+            {
+                string[] msg = message.Split('#');
+                string key = msg[0].Split('%')[0] + "#CallCoordination#" + msg[2];
+                string query = this.requestsToAnswer[key] + "#CallCoordination#" + msg[2] + "#" + msg[3] + "#" + msg[4];
+                signalization.sendMessage(query);
+            }
+            catch 
+            {
+                Console.WriteLine("Fsa");
+
+            }
+        }
+
+        private void callCoordinationNack(string message)
+        {
+
+        }
+        private void callRequestReceived(string message) 
+        {
+            
+        }
         #endregion
 
         #region frontend

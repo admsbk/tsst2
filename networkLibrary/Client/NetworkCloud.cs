@@ -189,19 +189,19 @@ namespace Cloud
                     }
                     else
                     {
-                        try
-                        {
+                        //try
+                        //{
                             string[] getNextNode = e.message.Split('#');
                             string pdu = "";
                             for (int i = 1; i < getNextNode.Length; i++)
                                 pdu += "#" + getNextNode[i];
                             server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + pdu);
                             addLog(this.logs, Constants.FORWARD_MESSAGE + " " + getSenderId + "%" + pdu, Constants.LOG_INFO);
-                        }
-                        catch
-                        {
-                          addLog(this.logs, Constants.UNREACHABLE_DST + " ", Constants.LOG_ERROR);
-                        }
+                        //}
+                        //catch
+                        //{
+                          //  addLog(this.logs, Constants.UNREACHABLE_DST + " ", Constants.LOG_ERROR);
+                        //}
                     }
                 }
             }

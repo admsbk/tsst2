@@ -19,6 +19,10 @@ namespace ClientNode
         private string myId;
         public string nc;
 
+        public delegate void NewConnection(object myObject, EventArgs myArgs);
+        public event NewConnection OnNewConnectionEstablished;
+
+
         public CPCC(Logs logWindow, string ip, string port, string myName, string myId, string networkController)
         {
             this.signalizationNetwork = new transportClient(ip, port);
@@ -41,9 +45,18 @@ namespace ClientNode
         private void onNewMessage(object a, MessageArgs e)
         {
             logs.addLog(e.message, true, Constants.LOG_INFO, true);
-            string[] parts = e.message.Split('#');
-            string response = parseMsgFromNCC(e.message);
-            signalizationNetwork.sendMessage(nc + "@CallControll#ConnectionRequest#" + parts[2] +"#"+this.myId+"#"+ response);
+            if (e.message.Contains("CallCoordination") && !e.message.Contains("ok"))
+            {
+                string[] parts = e.message.Split('#');
+                string response = parseMsgFromNCC(e.message);
+                signalizationNetwork.sendMessage(nc.Split('%')[0] + "@CallControll#CallCoordination#" + parts[2] + "#" + this.myId + "#" + response);
+            }
+
+            else if (e.message.Contains("CallCoordination") && e.message.Contains("ok")) 
+            {
+                EventArgs arg = new EventArgs();
+                OnNewConnectionEstablished(this, arg);
+            }
         }
 
         public void sendMessage(string msg)
@@ -53,22 +66,24 @@ namespace ClientNode
 
         public string parseMsgFromNCC(string query)
         {
-            string[] parts = query.Split('#');
-            DialogResult dialogResult = MessageBox.Show(parts[2]+ " is calling\nAccept?", myName+" CPCC", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.Yes)
-            {
-                return "ok";
-                //do something
-            }
-            else if (dialogResult == DialogResult.No)
-            {
-                return "fail";
-                //do something else
-            }
-            else
-            {
-                return "fail";
-            }
+            
+                string[] parts = query.Split('#');
+                DialogResult dialogResult = MessageBox.Show(parts[2] + " is calling\nAccept?", myName + " CPCC", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    return "ok";
+                    //do something
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    return "fail";
+                    //do something else
+                }
+                else
+                {
+                    return "fail";
+                }
+            
            
         }
 
