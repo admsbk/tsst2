@@ -154,6 +154,7 @@ namespace Cloud
                     try
                     {
                         string forwarded = switchBox.forwardMessage(getSenderId + "%" + e.message);
+                        addLog(this.logs, Constants.FORWARD_MESSAGE + " " + forwarded, Constants.LOG_INFO);
                         string[] getNextNode = forwarded.Split('%');
                         server.sendMessage(clientSockets[getNextNode[0]], getSenderId + "%" + getNextNode[1]);
                         addLog(this.logs, Constants.FORWARD_MESSAGE + " " + forwarded, Constants.LOG_INFO);
@@ -183,7 +184,7 @@ namespace Cloud
                         }
                         catch
                         {
-                            addLog(this.logs, Constants.UNREACHABLE_DST + " " + getSenderId, Constants.LOG_ERROR);
+                            addLog(this.logs, Constants.UNREACHABLE_DST + " " , Constants.LOG_ERROR);
                         }
                     }
                     else
@@ -199,7 +200,7 @@ namespace Cloud
                         }
                         catch
                         {
-                            addLog(this.logs, Constants.UNREACHABLE_DST + " " + getSenderId, Constants.LOG_ERROR);
+                          addLog(this.logs, Constants.UNREACHABLE_DST + " ", Constants.LOG_ERROR);
                         }
                     }
                 }

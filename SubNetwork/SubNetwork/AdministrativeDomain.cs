@@ -26,6 +26,7 @@ namespace SubNetwork
         ListView connection;
         public Manager manager { get; set; }
         private string nccname;
+        private Dictionary<string, string> requestsToAnswer;
         private List<string> neighbours;
         private List<string> parents;
         private List<string> children;
@@ -41,6 +42,7 @@ namespace SubNetwork
             neighbours = new List<string>();
             parents = new List<string>();
             children = new List<string>();
+            requestsToAnswer = new Dictionary<string, string>();
         }
 
         public void readConfig(string xmlConfigPath, string xmlTopologyPath)
@@ -173,18 +175,29 @@ namespace SubNetwork
                 int callerId = networkCallController.DirectoryRequest(message.Split('@')[0]);
                 if (callingId != -1)
                 {
-                    addLog(window.logList, "Routing...", Constants.LOG_INFO);
-                    NetworkConnection nc = networkCallController.CallRequest(callerId, callingId, Convert.ToInt32(args[4]));
-                    string traceroute ="";
-                    try
+                    
+                    object[] routeOutput = networkCallController.CallRequest(callerId, callingId, Convert.ToInt32(args[4]));
+                    NetworkConnection nc = (NetworkConnection)routeOutput[1];
+                    string syntax = (string)routeOutput[0];
+
+                    if (syntax == "Setting up connection")
                     {
-                        for (int i = 0; i < nc.Path.Count; i++)
-                            traceroute += nc.Path[i].SourceRouting + "##" + nc.Path[i].TargetRouting + "->";
-                        addLog(window.logList, "Traceroute: " + traceroute, Constants.LOG_INFO);
+                        string traceroute = "";
+                        try
+                        {
+                            addLog(window.logList, "Routing...", Constants.LOG_INFO);
+                            for (int i = 0; i < nc.Path.Count; i++)
+                                traceroute += nc.Path[i].SourceRouting + "##" + nc.Path[i].TargetRouting + "->";
+                            addLog(window.logList, "Traceroute: " + traceroute, Constants.LOG_INFO);
+                        }
+                        catch
+                        {
+                            addLog(window.logList, "Traceroute failed", Constants.LOG_ERROR);
+                        }
                     }
-                    catch
+                    else
                     {
-                        addLog(window.logList, "Traceroute failed", Constants.LOG_ERROR);
+                        addLog(window.logList, syntax, Constants.LOG_INFO);
                     }
                 }
 
@@ -197,6 +210,20 @@ namespace SubNetwork
                 string[] msg = message.Split('#');
                 string pattern = @"\d+";
                 this.nameCastReceived(msg[2].Split('@')[0] + "%" + Regex.Match(msg[3], pattern).Value+"000");
+                try
+                {
+                    manager.newNodeConnected(Regex.Match(msg[3], pattern).Value + "000", "Domain" + Regex.Match(msg[3], pattern).Value, "External");
+                    addLog(window.logList, "New neighbour " + "Domain" + Regex.Match(msg[3], pattern).Value, Constants.LOG_INFO);
+                }
+                catch
+                {
+                    
+                }
+            }
+
+            else if (message.Contains("CallCoordination"))
+            {
+                this.callCoordinationReceived(message);
             }
            
         }
@@ -206,7 +233,12 @@ namespace SubNetwork
             addLog(window.logList, "New Dir registration " + czesci[0].Split('@')[0] + " " + czesci[1], Constants.LOG_INFO);
             networkCallController.DirectoryRegistration(czesci[0].Split('@')[0] , Convert.ToInt32(czesci[1]));
         }
-        private void callCoordinationReceived(string message) { }
+        private void callCoordinationReceived(string message) 
+        {
+            string[] subMessage = message.Split('#');
+            signalization.sendMessage(subMessage[3]+"@CallControll#CallingParty#"+subMessage[2]);
+            //signalization.sendMessage(message.Split('#')[0].Split('%')[0]+"#CallCoordinationOK");
+        }
         private void callRequestReceived(string message) { }
         #endregion
 

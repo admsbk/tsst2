@@ -109,6 +109,8 @@ namespace SubNetwork
             {
                 if (label.Contains("CP"))
                     label = "CP.";
+                else if (value.Contains("CP"))
+                    value = "CP.";
                 Query(nodeId + "@CallControll#SET%" + label+"%"+value);
                 Console.WriteLine(nodeId + "@CallControll#rtadd " + value + " "+label+" " + connectionId);
                 Thread.Sleep(100);

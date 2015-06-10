@@ -12,8 +12,8 @@
 		            Width="310" Margin="0,0,-6,-2">
                         <Button x:Name="Button_1" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,172,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1" IsEnabled="False"/>
                         <TextBox x:Name="toSend" HorizontalAlignment="Left" Height="20" Margin="0,172,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
-                        <ScrollViewer x:Name="scroll" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,10,0" Height="172">
-                            <Grid x:Name="chat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
+                        <ScrollViewer x:Name="scroll" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Height="172">
+                            <Grid x:Name="chat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="285"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>

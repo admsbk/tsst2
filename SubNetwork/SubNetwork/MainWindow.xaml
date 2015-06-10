@@ -9,7 +9,7 @@
                 <TabItem Header="NCC">
                     <Grid Background="#FFE5E5E5" Margin="0,0,0,0">
                         <ScrollViewer x:Name="scroll" MaxHeight="310" MaxWidth="295" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Visible"  Height="317">
-                            <Grid x:Name="logList" Width="565" Height="276">
+                            <Grid x:Name="logList">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="282*"/>
                                 </Grid.ColumnDefinitions>

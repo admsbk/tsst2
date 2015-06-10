@@ -1,8 +1,8 @@
 ﻿<Window x:Class="SubNetwork.Head"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Head" Height="374" Width="615">
-    <Grid>
+        Title="Head" Height="63.905" Width="615">
+    <Grid Margin="0,0,0,2">
         <Menu HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="607">
             <MenuItem Header="_General">
                 <MenuItem Header="_Load configuration..." Click="Load_Conf_Click"/>

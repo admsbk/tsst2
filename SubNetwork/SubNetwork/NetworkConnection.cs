@@ -50,6 +50,8 @@ namespace SubNetwork
             Id = id;
             Path = new List<LinkConnection>();
         }
+
+        public NetworkConnection() { }
     }
 
     public class STM : Topology.Link

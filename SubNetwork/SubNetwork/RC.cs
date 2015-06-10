@@ -108,7 +108,7 @@ namespace SubNetwork
                     trgrt = e.TargetRouting.Split(':');
                     if (srcrt[1] == "" && trgrt[1] == "")
                     {
-                        srcrt[1] = rand();
+                        srcrt[1] = 
                         trgrt[1] = rand();
                         //lrm.reserve(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(srcrt[1]));
                         //lrm.reserve(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(trgrt[1]));

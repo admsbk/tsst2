@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Cloud Id = "NetworkCloud" CloudHost="localhost" CloudPort="3333" >
 	<TPology>
-		<Link Id="Link1" SrcId="ClientNode1" DstId="NetworkNode1" SrcPortId="P1" DstPortId="CP" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/> 	
-		<Link Id="Link2" SrcId="ClientNode2" DstId="NetworkNode2" SrcPortId="P1" DstPortId="CP" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/> 
+		<Link Id="Link1" SrcId="ClientNode1" DstId="NetworkNode1" SrcPortId="P1" DstPortId="CP" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/> 	
+		<Link Id="Link2" SrcId="ClientNode2" DstId="NetworkNode2" SrcPortId="P1" DstPortId="CP" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/> 
 		
-		<Link Id="Link5" SrcId="NetworkNode1" DstId="NetworkNode2" SrcPortId="P1" DstPortId="P1" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>
-		<Link Id="Link6" SrcId="NetworkNode2" DstId="NetworkNode5" SrcPortId="P2" DstPortId="P1" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/> 	
-		<Link Id="Link7" SrcId="NetworkNode5" DstId="NetworkNode1" SrcPortId="P2" DstPortId="P2" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/> 
-		<Link Id="Link8" SrcId="NetworkNode3" DstId="NetworkNode2" SrcPortId="P1" DstPortId="P3" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>
-		<Link Id="Link9" SrcId="NetworkNode5" DstId="NetworkNode3" SrcPortId="P3" DstPortId="P3" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/> 
-		<Link Id="Link10" SrcId="NetworkNode4" DstId="NetworkNode1" SrcPortId="P1" DstPortId="P3" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>
-		<Link Id="Link11" SrcId="NetworkNode1" DstId="NetworkNode5" SrcPortId="P4" DstPortId="P4" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/> 
-		<Link Id="Link12" SrcId="NetworkNode5" DstId="NetworkNode2" SrcPortId="P5" DstPortId="P4" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>
-		<Link Id="Link13" SrcId="NetworkNode2" DstId="NetworkNode3" SrcPortId="P5" DstPortId="P4" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/> 		
-		<Link Id="Link14" SrcId="NetworkNode3" DstId="NetworkNode4" SrcPortId="P5" DstPortId="P2" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>
-		<Link Id="Link15" SrcId="NetworkNode4" DstId="NetworkNode3" SrcPortId="P3" DstPortId="P6" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>		
-		<Link Id="Link16" SrcId="NetworkNode4" DstId="NetworkNode5" SrcPortId="P4" DstPortId="P6" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5"/>
-		<Link Id="Link17" SrcId="NetworkNode4" DstId="NetworkNode6" SrcPortId="P5" DstPortId="P1" SrcDomainID="Domain1" DstDomainID="Domain2" Weight="10" Length="5"/>
-		<Link Id="Link18" SrcId="NetworkNode6" DstId="NetworkNode7" SrcPortId="P2" DstPortId="P1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/>
-		<Link Id="Link19" SrcId="NetworkNode6" DstId="NetworkNode8" SrcPortId="P3" DstPortId="P1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/>
-		<Link Id="Link20" SrcId="NetworkNode9" DstId="NetworkNode6" SrcPortId="P1" DstPortId="P4" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/>
-		<Link Id="Link21" SrcId="NetworkNode9" DstId="NetworkNode10" SrcPortId="P2" DstPortId="P1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/>
-		<Link Id="Link22" SrcId="NetworkNode10" DstId="NetworkNode6" SrcPortId="P2" DstPortId="P4" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/>
-		<Link Id="Link23" SrcId="NetworkNode10" DstId="NetworkNode11" SrcPortId="P3" DstPortId="P1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/>
-		<Link Id="Link24" SrcId="NetworkNode11" DstId="NetworkNode2" SrcPortId="P2" DstPortId="P6" SrcDomainID="Domain2" DstDomainID="Domain1" Weight="10" Length="5"/>
-		<Link Id="Link25" SrcId="NetworkNode11" DstId="NetworkNode9" SrcPortId="P3" DstPortId="P3" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/>
-		<Link Id="Link3" SrcId="ClientNode3" DstId="NetworkNode11" SrcPortId="P4" DstPortId="CP" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/> 
-		<Link Id="Link4" SrcId="ClientNode4" DstId="NetworkNode9" SrcPortId="P4" DstPortId="CP" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5"/> 
+		<Link Id="Link5" SrcId="NetworkNode1" DstId="NetworkNode2" SrcPortId="P1" DstPortId="P1" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link6" SrcId="NetworkNode2" DstId="NetworkNode5" SrcPortId="P2" DstPortId="P1" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/> 	
+		<Link Id="Link7" SrcId="NetworkNode5" DstId="NetworkNode1" SrcPortId="P2" DstPortId="P2" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/> 
+		<Link Id="Link8" SrcId="NetworkNode3" DstId="NetworkNode2" SrcPortId="P1" DstPortId="P3" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link9" SrcId="NetworkNode5" DstId="NetworkNode3" SrcPortId="P3" DstPortId="P3" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/> 
+		<Link Id="Link10" SrcId="NetworkNode4" DstId="NetworkNode1" SrcPortId="P1" DstPortId="P3" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link11" SrcId="NetworkNode1" DstId="NetworkNode5" SrcPortId="P4" DstPortId="P4" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/> 
+		<Link Id="Link12" SrcId="NetworkNode5" DstId="NetworkNode2" SrcPortId="P5" DstPortId="P4" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link13" SrcId="NetworkNode2" DstId="NetworkNode3" SrcPortId="P5" DstPortId="P4" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/> 		
+		<Link Id="Link14" SrcId="NetworkNode3" DstId="NetworkNode4" SrcPortId="P5" DstPortId="P2" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link15" SrcId="NetworkNode4" DstId="NetworkNode3" SrcPortId="P3" DstPortId="P6" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/>		
+		<Link Id="Link16" SrcId="NetworkNode4" DstId="NetworkNode5" SrcPortId="P4" DstPortId="P6" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link17" SrcId="NetworkNode4" DstId="NetworkNode6" SrcPortId="P5" DstPortId="P1" SrcDomainID="Domain1" DstDomainID="Domain2" Weight="10" Length="5" Type="External1"/>
+		<Link Id="Link18" SrcId="NetworkNode6" DstId="NetworkNode7" SrcPortId="P2" DstPortId="P1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link19" SrcId="NetworkNode6" DstId="NetworkNode8" SrcPortId="P3" DstPortId="P1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link20" SrcId="NetworkNode9" DstId="NetworkNode6" SrcPortId="P1" DstPortId="P4" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link21" SrcId="NetworkNode9" DstId="NetworkNode10" SrcPortId="P2" DstPortId="P1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link22" SrcId="NetworkNode10" DstId="NetworkNode6" SrcPortId="P2" DstPortId="P4" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link23" SrcId="NetworkNode10" DstId="NetworkNode11" SrcPortId="P3" DstPortId="P1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link24" SrcId="NetworkNode11" DstId="NetworkNode2" SrcPortId="P2" DstPortId="P6" SrcDomainID="Domain2" DstDomainID="Domain1" Weight="10" Length="5" Type="External2"/>
+		<Link Id="Link25" SrcId="NetworkNode11" DstId="NetworkNode9" SrcPortId="P3" DstPortId="P3" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/>
+		<Link Id="Link3" SrcId="ClientNode3" DstId="NetworkNode11" SrcPortId="P1" DstPortId="CP" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/> 
+		<Link Id="Link4" SrcId="ClientNode4" DstId="NetworkNode9" SrcPortId="P1" DstPortId="CP" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/> 
 		
 		
 		<ConnectionControl Id="CCLink1" SrcId="NCC1@CallControll" DstId="NCC2@CallControll"/>

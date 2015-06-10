@@ -9,6 +9,7 @@ using System.Net;
 
 namespace SubNetwork
 {
+   
     public class NCC
     {
         private class DirectoryEntry
@@ -19,6 +20,7 @@ namespace SubNetwork
             public byte[] Buffer = new byte[4086];
         }
         private Dictionary<string, DirectoryEntry> Directory = new Dictionary<string, DirectoryEntry>();
+        private Dictionary<string, NetworkConnection> connBuffer = new Dictionary<string, NetworkConnection>();
         private Manager manager;
         private CC ConnectionController;
         private transportClient network;
@@ -135,15 +137,36 @@ namespace SubNetwork
             }
         }
 
-        public NetworkConnection CallRequest(int sourceId, int targetId, int cap)
+        public object[] CallRequest(int sourceId, int targetId, int cap)
         {
-            NetworkConnection connection = rc.assignRoute(sourceId, targetId, ConnectionController.GetFreeId(), cap);
-            if (connection != null)
+            object[] toReturn = new object[2];
+            NetworkConnection connection = new NetworkConnection();
+            var srcName = Directory.FirstOrDefault(x => x.Value.Id == sourceId).Key;
+            var dstName = Directory.FirstOrDefault(x => x.Value.Id == targetId).Key;
+            if (targetId % 1000 == 0)
             {
-                ConnectionController.AddConnection(connection);
-                ConnectionController.ConnectionRequest(connection.Id);
+                //e-nni
+                network.sendMessage("NCC"+targetId/1000+"@CallControll#CallCoordination#"+srcName+"#"+dstName);
+                connection = rc.assignRoute(sourceId, targetId, ConnectionController.GetFreeId(), cap);
+                connBuffer.Add("CallCoordination#"+srcName+"#"+dstName, connection);
+                toReturn[0] = "Waiting for Call Coordination ok";
+                toReturn[1] = connection;
+                return toReturn;
             }
-            return connection;
+
+            else
+            {
+                connection = rc.assignRoute(sourceId, targetId, ConnectionController.GetFreeId(), cap);
+                if (connection != null)
+                {
+                    ConnectionController.AddConnection(connection);
+                    ConnectionController.ConnectionRequest(connection.Id);
+                }
+                toReturn[0] = "Setting up connection";
+                toReturn[1] = connection;
+                return toReturn;
+            }
+            
         }
 
         public void CallTeardown(NetworkConnection connection, string reason)
