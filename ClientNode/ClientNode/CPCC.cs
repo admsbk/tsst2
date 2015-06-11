@@ -72,6 +72,9 @@ namespace ClientNode
                 if (dialogResult == DialogResult.Yes)
                 {
                     return "ok";
+                    logs.addLog("Caller connected " + query, true, Constants.LOG_INFO, true);
+                    MessageArgs arg = new MessageArgs(query);
+                    OnNewConnectionEstablished(this, arg);
                     //do something
                 }
                 else if (dialogResult == DialogResult.No)

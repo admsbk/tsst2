@@ -107,7 +107,7 @@ namespace SubNetwork
                         }
                     }
 
-                    else if (entry.Value.nodeSrc==sourceNode.Name && entry.Value.portDst.Contains("Domain"))
+                    else if (entry.Value.nodeSrc==sourceNode.Name && entry.Value.nodeDst.Contains("Domain"))
                     {
                         if (nodes.ContainsKey(Convert.ToInt32(match.Value) * 1000))
                         {

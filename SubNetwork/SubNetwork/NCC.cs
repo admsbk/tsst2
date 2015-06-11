@@ -70,7 +70,7 @@ namespace SubNetwork
                 string portsAvailable = rc.getExternalPorts(sourceId, targetId, ConnectionController.GetFreeId(), cap); 
                 network.sendMessage("NCC"+targetId/1000+"@CallControll#CallCoordination#"+srcName+"#"+dstName+"#"+cap+"#"+portsAvailable);
      
-                connBuffer.Add("CallCoordination#"+srcName+"#"+dstName, connection);
+                //connBuffer.Add("CallCoordination#"+srcName+"#"+dstName, connection);
                 toReturn[0] = "Waiting for Call Coordination ok";
                 toReturn[1] = null;
                 return toReturn;
@@ -88,11 +88,12 @@ namespace SubNetwork
             
         }
 
-        public NetworkConnection CallCoordination(string[] ports, string dstName, int dstId, int cap)
+        public object[] CallCoordination(string[] ports, string dstName, int dstId, int cap)
         {
             object[] toReturn = new object[2];
             NetworkConnection connection = new NetworkConnection();
-            for (int i = 0; i < ports.Length; i++)
+            int i = 0;
+            for ( ; i < ports.Length; i++)
             {
                 connection = rc.ExternalRequest(ports[i], dstName, dstId, ConnectionController.GetFreeId(), cap);
                 if (connection != null)
@@ -100,8 +101,22 @@ namespace SubNetwork
             }
 
             //toReturn[0] = "";
-            return connection;
+            toReturn[0]=ports[i];
+            toReturn[1] = connection;
+            return toReturn;
 
+        }
+
+        public NetworkConnection CallCoordinationAck(string srdDstName, string connArgs, string choosedSlot)
+        {
+            NetworkConnection connection = new NetworkConnection();
+            string[] names = srdDstName.Split('#');
+            string[] args = connArgs.Split('#');
+            string connectionId = "1";
+
+            connection = rc.getPathViaExternalLink(Convert.ToInt32(args[0]), Convert.ToInt32(args[1]), Convert.ToInt32(connectionId), Convert.ToInt32(args[2]), choosedSlot);
+
+            return connection;
         }
 
         public bool Establish(NetworkConnection connection)

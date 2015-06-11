@@ -54,16 +54,16 @@ namespace SubNetwork
 
                         else if (domain == link[5])
                         {
-                            SNPLink l = new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), link.ElementAt(6), link.ElementAt(9));
+                            SNPLink l = new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), link.ElementAt(4), link.ElementAt(9));
                             resources.Add(link[0], l);
-                            links.Items.Add(new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), link.ElementAt(6), link.ElementAt(9)));
+                            links.Items.Add(new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), link.ElementAt(4), link.ElementAt(9)));
                         }
 
                         else if (domain == link[6])
                         {
-                            SNPLink l = new SNPLink(link.ElementAt(5), link.ElementAt(2), link.ElementAt(5), link.ElementAt(4), link.ElementAt(9));
+                            SNPLink l = new SNPLink(link.ElementAt(5), link.ElementAt(2), link.ElementAt(3), link.ElementAt(4), link.ElementAt(9));
                             resources.Add(link[0], l);
-                            links.Items.Add(new SNPLink(link.ElementAt(5), link.ElementAt(2), link.ElementAt(5), link.ElementAt(4), link.ElementAt(9)));
+                            links.Items.Add(new SNPLink(link.ElementAt(5), link.ElementAt(2), link.ElementAt(3), link.ElementAt(4), link.ElementAt(9)));
                         }
                         
                     }
@@ -92,7 +92,7 @@ namespace SubNetwork
         {
             foreach (KeyValuePair<string, SNPLink> entry in resources)
             {
-                if (entry.Value.nodeSrc == namesrc && entry.Value.nodeDst == namedst)
+                if ((entry.Value.nodeSrc == namesrc && entry.Value.nodeDst == namedst) || (entry.Value.nodeSrc == namedst && entry.Value.nodeDst == namesrc))
                     return entry.Value.slotFree(slot);
             }
             

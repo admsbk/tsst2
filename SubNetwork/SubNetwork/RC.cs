@@ -84,9 +84,8 @@ namespace SubNetwork
                     {
                         rtn += getLastLink(ss)+"#";
                         int size = ss.path.Count;
-                        for (int i = 1; i <= iter; i++ )
-                            ownTopology.RemoveEdge(ss.path[size - i]);
-                        iter++;
+                        ownTopology.RemoveEdge(ss.path[size - 1]);
+                        
                     }
                     else
                         return null;
@@ -94,6 +93,39 @@ namespace SubNetwork
             }while(isExternalLink(ss, trg));
             
             return rtn;
+        }
+
+        public NetworkConnection getPathViaExternalLink(int src, int trg, int connectN, int requieredCapacity, string link)
+        {
+            RoutingGraph ownTopology = RoutingGraph.MapTopology(manager.Topology, ConnectionController.VirtualPaths, requieredCapacity);
+            List<RoutingGraph.Link> toRemove = new List<RoutingGraph.Link>();
+            string slot = link.Split(':')[1];
+            foreach (var edge in ownTopology.Edges)
+            {
+                if (edge.tLink.Name != link.Split(':')[0] && edge.tLink.Name.Contains("External"))
+                {
+                    
+                    toRemove.Add(edge);
+                }
+            }
+            foreach (var rm in toRemove)
+            {
+                ownTopology.RemoveEdge(rm);
+            }
+
+            SetupStore ss = new SetupStore(src, trg, ownTopology, connectN, requieredCapacity);
+
+            
+            if (ss.ownTopology.EdgeCount != 0)
+            {
+                if (this.findBestPath(ss) && this.askLRMs(ss, slot))  //if true -> creating list vcivpi
+                {
+                    return this.parseToNetworConnection(ss);
+                }
+                else
+                    return null;
+            }
+            return null;
         }
 
         private string getLastLink(SetupStore ss)
@@ -146,7 +178,7 @@ namespace SubNetwork
             return networkConnection;
         }
 
-        public bool askLRMs(SetupStore ss)
+        public bool askLRMs(SetupStore ss, string preferedSlot = "")
         {
             string VpiVci = "";
             /*
@@ -166,39 +198,28 @@ namespace SubNetwork
                     string tmp2 = e.TargetRouting.Replace(".", ":");
                     srcrt = tmp1.Split(':'); // [0] -> Port, [1] -> Slot
                     trgrt = tmp2.Split(':');
-                    if (srcrt[1] == "" && trgrt[1] == "")
+                    if (preferedSlot != "")
+                        srcrt[1] = trgrt[1] = preferedSlot;
+                    else if (srcrt[1] == "" && trgrt[1] == "")
                     {
                         srcrt[1] = 
                         trgrt[1] = rand();
-                        //lrm.reserve(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(srcrt[1]));
-                        //lrm.reserve(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(trgrt[1]));
+                        
                     }
                     i++;
                 } while (
-                    !lrm.isAvailable(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(srcrt[1])) &&
-                    !lrm.isAvailable(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(trgrt[1])) &&
-                    i<3
-                    
-                /*
-                    !doIHaveFreePorts(manager.Get(e.Source.Id, "PortsOut." + srcrt[0] + ".Available." + srcrt[1] + "." + srcrt[2])) ||
-                    !doIHaveFreePorts(manager.Get(e.Target.Id, "PortsIn." + trgrt[0] + ".Available." + trgrt[1] + "." + trgrt[2]))*/
+                    !lrm.isAvailable(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(srcrt[1])) ||
+                    !lrm.isAvailable(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(trgrt[1]))
                     );
+               // lrm.reserve(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(srcrt[1]));
+               // lrm.reserve(e.Source.tNode.Name, e.Target.tNode.Name, Convert.ToInt32(trgrt[1]));
+
                 e.SourceRouting = srcrt[0] + "." + srcrt[1];
                 e.TargetRouting = trgrt[0] + "." + trgrt[1];
                 ss.vcivpiList.Add(VpiVci);
 
             }
             return true;
-        }
-
-        private bool doIHaveFreePorts(String response)
-        {
-            switch (response)
-            {
-                case "True": return true;
-                case "False": return false;
-                default: return false;
-            }
         }
 
         private String rand()
@@ -231,17 +252,12 @@ namespace SubNetwork
 
             }
 
-            //var dijkstra = new DijkstraShortestPathAlgorithm<RoutingGraph.Node, RoutingGraph.Link>(ss.ownTopology, e => edgeCost[e]);
             var dijkstra = new DijkstraShortestPathAlgorithm<RoutingGraph.Node, RoutingGraph.Link>(ss.ownTopology, e => edgeCost[e]);
-            
-            // Attach a Vertex Predecessor Recorder Observer to give us the paths
-            //var predecessorObserver = new VertexPredecessorRecorderObserver<RoutingGraph.Node, RoutingGraph.Link>();
-            //predecessorObserver.Attach(dijkstra);
             var predecessor = new VertexPredecessorRecorderObserver<RoutingGraph.Node, RoutingGraph.Link>();
             predecessor.Attach(dijkstra);
             dijkstra.Compute(this.IDtoNode(ss.source, ss.ownTopology));
             IEnumerable<RoutingGraph.Link> path;
-            //List<Topology.Link> ddd = new List<Topology.Link>();
+
             if (predecessor.TryGetPath(this.IDtoNode(ss.target, ss.ownTopology), out path))
             {
                 ss.path.AddRange(path);

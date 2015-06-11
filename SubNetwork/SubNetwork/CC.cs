@@ -29,15 +29,43 @@ namespace SubNetwork
 
         public bool ConnectionRequest(int connectionId)
         {
+            Dictionary<string, string[]> routingEntry = new Dictionary<string, string[]>();
             if (!connections.ContainsKey(connectionId))
                 return false;
             NetworkConnection connection = connections[connectionId];
+            List<string> ports = new List<string>();
             if (!connections[connectionId].Active)
             {
                 string label = connection.Id.ToString(); // pierwszy wpis: Id -> re
                 string value = "";
+                
                 foreach (var link in connection.Path)
                 {
+                    
+                    if (!routingEntry.ContainsKey(link.SourceId))
+                    {
+                        string[] table = new string[2];
+                        table[0] = link.SourceRouting;
+                        routingEntry.Add(link.SourceId, table);
+                    }
+                    else
+                    {
+                        routingEntry[link.SourceId][1] = link.SourceRouting;
+                    }
+                    if (!routingEntry.ContainsKey(link.TargetId))
+                    {
+                        string[] table = new string[2];
+                        table[0] = link.TargetRouting;
+                        routingEntry.Add(link.TargetId, table);
+                    }
+                    else
+                    {
+                        routingEntry[link.TargetId][1] = link.TargetRouting;
+                    }
+
+                }
+
+                    /*
                     value = link.SourceRouting;
                     
                     if (!AddRouting(link.SourceId, label, value, connection.Id))
@@ -47,14 +75,27 @@ namespace SubNetwork
                     }
                     link.Link.Capacity -= connection.Capacity;
                     label = link.TargetRouting;
-                }
+                    */
+                
+                /*
                 value = connection.Id.ToString();
                 
                 if (!AddRouting(connection.Target+"", label, value, connection.Id))
                 {   // ...to także
                     Disconnect(connectionId);
                     return false;
+                }*/
+
+                foreach (var nn in routingEntry)
+                {
+                    if(nn.Value[1]!=null)
+                        if (!AddRouting(nn.Key, nn.Value[0], nn.Value[1], connection.Id))
+                        {   // to nie powinno się zdarzyć...
+                            Disconnect(connectionId);
+                            return false;
+                        }
                 }
+
                 connection.Active = true;
             }
             return connection.Active;

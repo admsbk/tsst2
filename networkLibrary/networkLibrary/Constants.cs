@@ -59,7 +59,7 @@ namespace networkLibrary
         
 
         //handle messages
-        public const string RECEIVED_FROM_MANAGER = "Received from Network Manager:";
+        public const string RECEIVED_FROM_MANAGER = "NM order:";
         public const string FORWARD_MESSAGE = "Forwarding following message:";
         public const string INVALID_PORT = "No such port in Forward Table";
 

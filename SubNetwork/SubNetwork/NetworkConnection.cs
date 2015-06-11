@@ -19,6 +19,7 @@ namespace SubNetwork
     {
         public int Id { get; private set; }
         public int Capacity;
+        
         public List<LinkConnection> Path { get; private set; }
         public bool Active = false;
 
