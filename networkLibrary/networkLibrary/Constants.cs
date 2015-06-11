@@ -43,6 +43,7 @@ namespace networkLibrary
         public const string DOMAIN_DST = "DstDomainID";
         public const string WEIGHT = "Weight";
         public const string LENGTH = "Length";
+        public const string TYPE = "Type";
         public const string NETWORK_CONTROLLER = "NetworkController";
 
         //elementType - to read config from xml

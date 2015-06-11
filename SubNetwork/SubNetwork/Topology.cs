@@ -39,13 +39,15 @@ namespace SubNetwork
             public int MaxCapacity { get; private set; }
             public virtual string SourceRouting { get { return SourcePort + ":"; } }
             public virtual string TargetRouting { get { return TargetPort + ":"; } }
+            public string Name { get; set; }
 
-            public Link(Node source, Node target, string sourcePort, string targetPort, int capacity)
+            public Link(Node source, Node target, string sourcePort, string targetPort, int capacity, string Name)
                 : base(source, target)
             {
                 this.SourcePort = sourcePort;
                 this.TargetPort = targetPort;
                 this.Capacity = this.MaxCapacity = capacity;
+                this.Name = Name;
             }
 
 

@@ -93,20 +93,49 @@ namespace SubNetwork
                 {
                     string pattern = @"\d+";
                     Match match = Regex.Match(entry.Value.nodeDst, pattern);
-                    if (entry.Value.nodeSrc == sourceNode.Name)
+                    if (entry.Value.nodeSrc == sourceNode.Name && entry.Value.name == "Internal")
                     {
                         if (nodes.ContainsKey(Convert.ToInt32(match.Value)))
                         {
                             topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
                                 nodes[Convert.ToInt32(match.Value)].tnode, entry.Value.portSrc,
-                                entry.Value.portDst, 140));
-                            
-                            topology.AddEdge(new Topology.Link(nodes[Convert.ToInt32(match.Value)].tnode, 
-                                nodes[sourceNode.Id].tnode,
-                                entry.Value.portDst, entry.Value.portSrc, 140));
+                                entry.Value.portDst, 140, entry.Value.name));
 
+                            topology.AddEdge(new Topology.Link(nodes[Convert.ToInt32(match.Value)].tnode,
+                                nodes[sourceNode.Id].tnode,
+                                entry.Value.portDst, entry.Value.portSrc, 140, entry.Value.name));
                         }
                     }
+
+                    else if (entry.Value.nodeSrc==sourceNode.Name && entry.Value.portDst.Contains("Domain"))
+                    {
+                        if (nodes.ContainsKey(Convert.ToInt32(match.Value) * 1000))
+                        {
+                            topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
+                                nodes[Convert.ToInt32(match.Value) * 1000].tnode, entry.Value.portSrc,
+                                entry.Value.portDst, 140, entry.Value.name));
+
+                            topology.AddEdge(new Topology.Link(nodes[Convert.ToInt32(match.Value) * 1000].tnode,
+                                nodes[sourceNode.Id].tnode,
+                                entry.Value.portDst, entry.Value.portSrc, 140, entry.Value.name));
+                        }
+                    }
+
+                    else if (entry.Value.nodeDst == sourceNode.Name && entry.Value.nodeSrc.Contains("Domain"))
+                    {
+                        if (nodes.ContainsKey(Convert.ToInt32(match.Value) * 1000))
+                        {
+                            topology.AddEdge(new Topology.Link(nodes[sourceNode.Id].tnode,
+                                nodes[Convert.ToInt32(match.Value) * 1000].tnode, entry.Value.portSrc,
+                                entry.Value.portDst, 140, entry.Value.name));
+
+                            topology.AddEdge(new Topology.Link(nodes[Convert.ToInt32(match.Value) * 1000].tnode,
+                                nodes[sourceNode.Id].tnode,
+                                entry.Value.portDst, entry.Value.portSrc, 140, entry.Value.name));
+                        }
+                    }
+                    
+                    
                 }
             }
         }

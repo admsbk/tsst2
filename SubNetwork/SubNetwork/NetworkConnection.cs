@@ -63,8 +63,8 @@ namespace SubNetwork
         public override string TargetRouting { get { return TargetPort + ":" + TargetSlot + ":"; } }
         public List<LinkConnection> Path;
 
-        public STM(int id, Topology.Node source, Topology.Node target, string sourcePort, string targetPort, int sourceVpi, int targetVpi, int capacity)
-            : base(source, target, sourcePort, targetPort, capacity)
+        public STM(int id, Topology.Node source, Topology.Node target, string sourcePort, string targetPort, int sourceVpi, int targetVpi, int capacity, string name)
+            : base(source, target, sourcePort, targetPort, capacity, name)
         {
             this.Id = id;
             this.SourceSlot = sourceVpi;

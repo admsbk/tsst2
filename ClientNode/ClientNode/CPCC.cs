@@ -19,7 +19,7 @@ namespace ClientNode
         private string myId;
         public string nc;
 
-        public delegate void NewConnection(object myObject, EventArgs myArgs);
+        public delegate void NewConnection(object myObject, MessageArgs myArgs);
         public event NewConnection OnNewConnectionEstablished;
 
 
@@ -54,7 +54,7 @@ namespace ClientNode
 
             else if (e.message.Contains("CallCoordination") && e.message.Contains("ok")) 
             {
-                EventArgs arg = new EventArgs();
+                MessageArgs arg = new MessageArgs(e.message);               
                 OnNewConnectionEstablished(this, arg);
             }
         }

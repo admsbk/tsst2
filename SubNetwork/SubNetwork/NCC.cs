@@ -24,98 +24,20 @@ namespace SubNetwork
         private Manager manager;
         private CC ConnectionController;
         private transportClient network;
+        private LRM lrm;
 
         private RC rc { get; set; }
         private RC routingController { get; set; }
-        /*
-        public int Port
-        {
-            /*
-            get
-            {
-                if (this.socket != null)
-                    return ((IPEndPoint)this.socket.LocalEndPoint).Port;
-                else
-                    return 0;
-            }
-        }*/
 
         public NCC(Manager manager, LRM linkResourceManager, networkLibrary.transportClient client, MainWindow window)
         {
             this.manager = manager;
             this.network = client;
             ConnectionController = new CC(this.network, window);
+            this.lrm = linkResourceManager;
             this.rc = new RC(manager, linkResourceManager, ConnectionController);
             
         }
-
-        /*
-        private void ProcessQuery(string recv, DirectoryEntry client)
-        {
-            string[] query = recv.Split(' ');
-            if (query[0] == "call_request")
-            // format wiadomości: call_request {calling_name} {called_name} {capacity}
-            {
-                if (query.Length != 4)
-                {
-                    client.Socket.Send(Encoding.ASCII.GetBytes(
-                        String.Format("call_rejected invalid_query {0}", query[2])));
-                    return;
-                }
-                if (query[1] == client.Name)
-                {
-                    if (Directory.ContainsKey(query[2]))
-                    {
-                        var called = Directory[query[2]];
-                        int callingId = client.Id;
-                        int calledId = called.Id;
-                        int cap;
-                        try { cap = Int32.Parse(query[3]); }
-                        catch (FormatException)
-                        {
-                            client.Socket.Send(Encoding.ASCII.GetBytes(
-                                String.Format("call_rejected invalid_query {0}", query[2])));
-                            return;
-                        }
-
-                        NetworkConnection connection = rc.setupConnection(callingId, calledId, manager.GetFreeId(), cap);
-                        if (connection == null)
-                            client.Socket.Send(Encoding.ASCII.GetBytes(
-                                String.Format("call_rejected no_resources {0}", query[2])));
-                        else
-                        {
-                            manager.AddConnection(connection);
-                            called.Socket.Send(Encoding.ASCII.GetBytes(
-                                String.Format("call_pending {0} {1}", connection.Id, client.Name)));
-                        }
-                    }
-                    else
-                    {
-                        client.Socket.Send(Encoding.ASCII.GetBytes(
-                            String.Format("call_rejected no_target {0}", query[2])));
-                    }
-                }
-            }
-            else if (query[0] == "call_accepted")
-            // format wiadomości: call_accepted {call_id} {calling_name}
-            {
-                int id = Int32.Parse(query[1]);
-                manager.Connect(id);
-                var caller = Directory[query[2]];
-                caller.Socket.Send(Encoding.ASCII.GetBytes(
-                    String.Format("call_finished {0} {1}", id, client.Name)));
-                client.Socket.Send(Encoding.ASCII.GetBytes(
-                    String.Format("call_finished {0} {1}", id, caller.Name)));
-            }
-            else if (query[0] == "call_teardown")
-            // format wiadomości: call_teardown {call_id}
-            {
-                int connectionId = Int32.Parse(query[1]);
-                if (client.Id == manager.Connections[connectionId].Source     // połączenie może rozłączyć jedynie
-                    || client.Id == manager.Connections[connectionId].Target) // węzeł korzystający z niego
-                    CallTeardown(manager.Connections[connectionId], client.Name);
-            }
-        }*/
 
         public void DirectoryRegistration(string name, int id)
         {
@@ -137,37 +59,63 @@ namespace SubNetwork
             }
         }
 
-        public object[] CallRequest(int sourceId, int targetId, int cap)
+        public object[] CallRequest(string srcName, string dstName, int sourceId, int targetId, int cap)
         {
             object[] toReturn = new object[2];
             NetworkConnection connection = new NetworkConnection();
-            var srcName = Directory.FirstOrDefault(x => x.Value.Id == sourceId).Key;
-            var dstName = Directory.FirstOrDefault(x => x.Value.Id == targetId).Key;
+
             if (targetId % 1000 == 0)
             {
                 //e-nni
-                network.sendMessage("NCC"+targetId/1000+"@CallControll#CallCoordination#"+srcName+"#"+dstName);
-                connection = rc.assignRoute(sourceId, targetId, ConnectionController.GetFreeId(), cap);
+                string portsAvailable = rc.getExternalPorts(sourceId, targetId, ConnectionController.GetFreeId(), cap); 
+                network.sendMessage("NCC"+targetId/1000+"@CallControll#CallCoordination#"+srcName+"#"+dstName+"#"+cap+"#"+portsAvailable);
+     
                 connBuffer.Add("CallCoordination#"+srcName+"#"+dstName, connection);
                 toReturn[0] = "Waiting for Call Coordination ok";
-                toReturn[1] = connection;
+                toReturn[1] = null;
                 return toReturn;
             }
 
             else
             {
+                //i-nni
                 connection = rc.assignRoute(sourceId, targetId, ConnectionController.GetFreeId(), cap);
-                if (connection != null)
-                {
-                    ConnectionController.AddConnection(connection);
-                    ConnectionController.ConnectionRequest(connection.Id);
-                }
+                Establish(connection);
                 toReturn[0] = "Setting up connection";
                 toReturn[1] = connection;
                 return toReturn;
             }
             
         }
+
+        public NetworkConnection CallCoordination(string[] ports, string dstName, int dstId, int cap)
+        {
+            object[] toReturn = new object[2];
+            NetworkConnection connection = new NetworkConnection();
+            for (int i = 0; i < ports.Length; i++)
+            {
+                connection = rc.ExternalRequest(ports[i], dstName, dstId, ConnectionController.GetFreeId(), cap);
+                if (connection != null)
+                    break;
+            }
+
+            //toReturn[0] = "";
+            return connection;
+
+        }
+
+        public bool Establish(NetworkConnection connection)
+        {
+            if (connection != null)
+            {
+                ConnectionController.AddConnection(connection);
+                ConnectionController.ConnectionRequest(connection.Id);
+                return true;
+            }
+            return false;
+        }
+
+
 
         public void CallTeardown(NetworkConnection connection, string reason)
         {

@@ -69,6 +69,63 @@ namespace SubNetwork
             return null;
         }
 
+        public string getExternalPorts(int src, int trg, int connectN, int requieredCapacity)
+        {
+            string rtn = "";
+
+            RoutingGraph ownTopology = RoutingGraph.MapTopology(manager.Topology, ConnectionController.VirtualPaths, requieredCapacity);
+            SetupStore ss = new SetupStore(src, trg, ownTopology, connectN, requieredCapacity);
+            int iter = 1;
+            do{
+                if (ss.ownTopology.EdgeCount != 0)
+                {
+                    ss = new SetupStore(src, trg, ownTopology, connectN, requieredCapacity);
+                    if (this.findBestPath(ss) && this.askLRMs(ss))  //if true -> creating list vcivpi
+                    {
+                        rtn += getLastLink(ss)+"#";
+                        int size = ss.path.Count;
+                        for (int i = 1; i <= iter; i++ )
+                            ownTopology.RemoveEdge(ss.path[size - i]);
+                        iter++;
+                    }
+                    else
+                        return null;
+                }
+            }while(isExternalLink(ss, trg));
+            
+            return rtn;
+        }
+
+        private string getLastLink(SetupStore ss)
+        {
+            return ss.path[ss.path.Count-1].tLink.Name; 
+        }
+
+        private bool isExternalLink(SetupStore ss, int target)
+        {
+            foreach (var edge in ss.ownTopology.Edges)
+                if (edge.Target.Id == target)
+                    return true;
+
+            return false;
+
+        }
+
+        public NetworkConnection ExternalRequest(string port, string dstName, int dstId, int conn, int cap)
+        {
+            return assignRoute(linkToNodeId(port), dstId, conn, cap);
+        }
+
+        private int linkToNodeId(string link)
+        {
+            foreach (var edge in manager.Topology.Edges)
+                if (edge.Name == link)
+                    return edge.Source.Id;
+
+            return 0;
+        }
+
+
         private NetworkConnection parseToNetworConnection(SetupStore ss)
         {
             NetworkConnection networkConnection = new NetworkConnection(ss.connectN);
@@ -99,13 +156,16 @@ namespace SubNetwork
             {/*
                 if (!manager.Ping(e.Target.Id))
                     return false;*/
+                
                 string[] srcrt;
                 string[] trgrt;
                 int i = 0;
                 do
                 {
-                    srcrt = e.SourceRouting.Split(':'); // [0] -> Port, [1] -> Slot
-                    trgrt = e.TargetRouting.Split(':');
+                    string tmp1 = e.SourceRouting.Replace(".", ":");
+                    string tmp2 = e.TargetRouting.Replace(".", ":");
+                    srcrt = tmp1.Split(':'); // [0] -> Port, [1] -> Slot
+                    trgrt = tmp2.Split(':');
                     if (srcrt[1] == "" && trgrt[1] == "")
                     {
                         srcrt[1] = 

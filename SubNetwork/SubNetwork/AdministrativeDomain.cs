@@ -27,6 +27,7 @@ namespace SubNetwork
         public Manager manager { get; set; }
         private string nccname;
         private Dictionary<string, string> requestsToAnswer;
+        private Dictionary<string, NetworkConnection> toEstablish;
         private List<string> neighbours;
         private List<string> parents;
         private List<string> children;
@@ -43,6 +44,7 @@ namespace SubNetwork
             parents = new List<string>();
             children = new List<string>();
             requestsToAnswer = new Dictionary<string, string>();
+            toEstablish = new Dictionary<string, NetworkConnection>();
         }
 
         public void readConfig(string xmlConfigPath, string xmlTopologyPath)
@@ -148,8 +150,8 @@ namespace SubNetwork
                 int callerId = networkCallController.DirectoryRequest(message.Split('@')[0]);
                 if (callingId != -1)
                 {
-                    
-                    object[] routeOutput = networkCallController.CallRequest(callerId, callingId, Convert.ToInt32(args[4]));
+
+                    object[] routeOutput = networkCallController.CallRequest(message.Split('@')[0], args[3], callerId, callingId, Convert.ToInt32(args[4]));
                     NetworkConnection nc = (NetworkConnection)routeOutput[1];
                     string syntax = (string)routeOutput[0];
 
@@ -162,6 +164,7 @@ namespace SubNetwork
                             for (int i = 0; i < nc.Path.Count; i++)
                                 traceroute += nc.Path[i].SourceRouting + "##" + nc.Path[i].TargetRouting + "->";
                             addLog(window.logList, "Traceroute: " + traceroute, Constants.LOG_INFO);
+                            signalization.sendMessage(nc.Source+"@CallControll#CallCoordination#"+nc.Target+"#ok");
                         }
                         catch
                         {
@@ -214,8 +217,8 @@ namespace SubNetwork
                     try
                     {
                         string[] msg = message.Split('#');
+                        signalization.sendMessage(msg[2]+"@CallControll" + "#CallCoordination" + "#" + msg[3] + "#" + msg[4]);
 
-                        signalization.sendMessage(msg[2]+"@CallControll" + "#CallCoordination#" + "#" + msg[3] + "#" + msg[4]);
                     }
                     catch
                     {
@@ -226,6 +229,7 @@ namespace SubNetwork
                     
                 else if (message.Contains("fail"))
                     this.callCoordinationNack(message);
+                //call coordination od innego ncc
                 else
                     this.callCoordinationReceived(message);
             } 
@@ -237,20 +241,40 @@ namespace SubNetwork
             addLog(window.logList, "New Dir registration " + czesci[0].Split('@')[0] + " " + czesci[1], Constants.LOG_INFO);
             networkCallController.DirectoryRegistration(czesci[0].Split('@')[0] , Convert.ToInt32(czesci[1]));
         }
+
+        //od innego NCC
         private void callCoordinationReceived(string message) 
         {
+            int j = 0;
             string[] subMessage = message.Split('#');
+            string[] ports = new string[subMessage.Length - 5];
+            string senderName = subMessage[2];
+            string receiver = subMessage[3];
+            int cap = Convert.ToInt32(subMessage[4]);
+            int dstId = networkCallController.DirectoryRequest(receiver);
+            for(int i=5; i<subMessage.Length-1;i++){
+                ports[j] = subMessage[i];
+                j++;
+            }
+                
+
+            NetworkConnection nc = networkCallController.CallCoordination(ports, receiver, dstId, cap);
+            
             signalization.sendMessage(subMessage[3] + "@CallControll#CallCoordination#" + subMessage[2]);
+            this.toEstablish.Add(subMessage[3] + "@CallControll#CallCoordination#" + subMessage[2], nc);
             this.requestsToAnswer.Add(subMessage[3] + "@CallControll#CallCoordination#" + subMessage[2], subMessage[0].Split('%')[0]);
             //signalization.sendMessage(message.Split('#')[0].Split('%')[0]+"#CallCoordinationOK");
         }
 
+        //od klienta
         private void callCoordinationAck(string message)
         {
             try
             {
                 string[] msg = message.Split('#');
                 string key = msg[0].Split('%')[0] + "#CallCoordination#" + msg[2];
+                if(networkCallController.Establish(this.toEstablish[key]))
+                    addLog(window.logList, "Connected ", Constants.LOG_INFO);
                 string query = this.requestsToAnswer[key] + "#CallCoordination#" + msg[2] + "#" + msg[3] + "#" + msg[4];
                 signalization.sendMessage(query);
             }

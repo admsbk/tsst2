@@ -112,6 +112,7 @@ namespace networkLibrary
                 links[i].Add(xnode.Attributes[Constants.DOMAIN_DST].Value);
                 links[i].Add(xnode.Attributes[Constants.WEIGHT].Value);
                 links[i].Add(xnode.Attributes[Constants.LENGTH].Value);
+                links[i].Add(xnode.Attributes[Constants.TYPE].Value);
                 i++;
             }
         }

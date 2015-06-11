@@ -106,7 +106,7 @@ namespace SubNetwork
                 ///string arg1 = entry.Value[id_dst];
                 string arg2 = entry[3];
                 string arg3 = entry[4];
-                graph.AddEdge(new Topology.Link(nodes[id_src], nodes[id_dst], arg2, arg3, 140));
+                graph.AddEdge(new Topology.Link(nodes[id_src], nodes[id_dst], arg2, arg3, 140, ""));
             }
 
         }

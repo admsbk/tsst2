@@ -27,6 +27,9 @@ namespace ClientNode
         Client client;
         CPCC cpcc;
         Logs log;
+        private int[] connections = {0, 0, 0, 0};
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -44,7 +47,67 @@ namespace ClientNode
             }
 
         }
-       
+
+        private void newConnection(object a, MessageArgs e)
+        {
+            int i=0;
+            do
+            {
+                ++i;
+            }
+            while (connections[i] != 0);
+            connections[i] = 1;
+
+            switch (i)
+            {
+                case 1:
+                    
+                    this.call1.Dispatcher.Invoke(
+                        System.Windows.Threading.DispatcherPriority.Normal,
+                        new Action(() =>
+                        {
+                            this.call1.IsEnabled = true;
+                            this.call1.Header = e.message.Split('#')[2];
+                            this.Button_1.IsEnabled = true;
+                        })
+                    );
+                    break;
+                case 2:
+                    this.call2.Dispatcher.Invoke(
+                        System.Windows.Threading.DispatcherPriority.Normal,
+                        new Action(() =>
+                        {
+                            this.call2.IsEnabled = true;
+                            this.call2.Header = e.message.Split('#')[2];
+                            this.Button_2.IsEnabled = true;
+                        })
+                    );
+                    break;
+                case 3:
+                    this.call3.Dispatcher.Invoke(
+                        System.Windows.Threading.DispatcherPriority.Normal,
+                        new Action(() =>
+                        {
+                            this.call3.IsEnabled = true;
+                            this.call3.Header = e.message.Split('#')[2];
+                            this.Button_3.IsEnabled = true;
+                        })
+                    );
+                    break;
+                case 4:
+                    this.call4.Dispatcher.Invoke(
+                        System.Windows.Threading.DispatcherPriority.Normal,
+                        new Action(() =>
+                        {
+                            this.call4.IsEnabled = true;
+                            this.call4.Header = e.message.Split('#')[2];
+                            this.Button_4.IsEnabled = true;
+                        })
+                    );
+                    break;
+            }
+        }
+
         private void setChat()
         {
             DispatcherTimer timer = new DispatcherTimer();
@@ -68,7 +131,7 @@ namespace ClientNode
         {
             client.startService();
             cpcc = new CPCC(log, client.CloudIP, client.CloudPort, client.name, client.nodeName, client.networkController);
-            
+            cpcc.OnNewConnectionEstablished += new CPCC.NewConnection(newConnection);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

@@ -23,6 +23,18 @@ namespace SubNetwork
             this.links = view;
         }
 
+        public List<SNPLink> getExternal()
+        {
+            List<SNPLink> links = new List<SNPLink>();
+            foreach (KeyValuePair<string, SNPLink> kvp in resources)
+            {
+                if(kvp.Value.name.Contains("External"))
+                    links.Add(kvp.Value);
+            }
+
+            return links;
+        }
+
         public void loadTopology(string xmlPath)
         {
             try
@@ -35,23 +47,23 @@ namespace SubNetwork
                         if (domain == link[5] && domain == link[6])
                         {
                             //linkConnections.Add(link[0], new Topology.Link())
-                            SNPLink l = new SNPLink(link.ElementAt(1), link.ElementAt(2), link.ElementAt(3), link.ElementAt(4));
+                            SNPLink l = new SNPLink(link.ElementAt(1), link.ElementAt(2), link.ElementAt(3), link.ElementAt(4), link.ElementAt(9));
                             resources.Add(link[0], l);
-                            links.Items.Add(new SNPLink(link.ElementAt(1), link.ElementAt(2), link.ElementAt(3), link.ElementAt(4)));
+                            links.Items.Add(new SNPLink(link.ElementAt(1), link.ElementAt(2), link.ElementAt(3), link.ElementAt(4), link.ElementAt(9)));
                         }
 
                         else if (domain == link[5])
                         {
-                            SNPLink l = new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), "");
+                            SNPLink l = new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), link.ElementAt(6), link.ElementAt(9));
                             resources.Add(link[0], l);
-                            links.Items.Add(new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), ""));
+                            links.Items.Add(new SNPLink(link.ElementAt(1), link.ElementAt(6), link.ElementAt(3), link.ElementAt(6), link.ElementAt(9)));
                         }
 
                         else if (domain == link[6])
                         {
-                            SNPLink l = new SNPLink(link.ElementAt(5), link.ElementAt(2), "", link.ElementAt(4));
+                            SNPLink l = new SNPLink(link.ElementAt(5), link.ElementAt(2), link.ElementAt(5), link.ElementAt(4), link.ElementAt(9));
                             resources.Add(link[0], l);
-                            links.Items.Add(new SNPLink(link.ElementAt(5), link.ElementAt(2), "", link.ElementAt(4)));
+                            links.Items.Add(new SNPLink(link.ElementAt(5), link.ElementAt(2), link.ElementAt(5), link.ElementAt(4), link.ElementAt(9)));
                         }
                         
                     }
@@ -117,14 +129,17 @@ namespace SubNetwork
         public string nodeSrc { get; set; }
         public string nodeDst { get; set; }
 
+        public string name { get; set; }
+
         private bool[] isBusy;
 
-        public SNPLink(string nodeIn, string nodeOut, string portIn, string portOut)
+        public SNPLink(string nodeIn, string nodeOut, string portIn, string portOut, string name)
         {
             this.portSrc = portIn;
             this.portDst = portOut;
             this.nodeSrc = nodeIn;
             this.nodeDst = nodeOut;
+            this.name = name;
             isBusy = new bool[3];
             for (int i = 0; i < isBusy.Length; i++)
                 isBusy[i] = false;
