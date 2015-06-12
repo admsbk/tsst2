@@ -139,11 +139,11 @@ namespace ClientNode
             }
         }
 
-        public void sendMessage(string msg)
+        public void sendMessage(string msg, int port)
         {
             try
             {
-                client.sendMessage(this.portsOut[0] + "&" + msg + "/");
+                client.sendMessage(this.portsOut[port] + "&" + msg + "/");
                 addChatMessage(msg, Constants.LEFT);
             }
             catch { }

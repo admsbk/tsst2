@@ -71,10 +71,11 @@ namespace ClientNode
                 DialogResult dialogResult = MessageBox.Show(parts[2] + " is calling\nAccept?", myName + " CPCC", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
-                    return "ok";
+                    
                     logs.addLog("Caller connected " + query, true, Constants.LOG_INFO, true);
                     MessageArgs arg = new MessageArgs(query);
                     OnNewConnectionEstablished(this, arg);
+                    return "ok";
                     //do something
                 }
                 else if (dialogResult == DialogResult.No)
@@ -90,25 +91,12 @@ namespace ClientNode
            
         }
 
-        public void callRequest(string name, string capacity)
-        {
-
-            if (!peers.ContainsKey(name))
-            {
-                sendMessage(Constants.PARSER_CALL_REQUEST + " " + myName + " " + name + " " + capacity);
-                logs.addLog("<" + name + "> " + Constants.CPCC_CALL_REQUEST, true, Constants.LOG_INFO, true);
-                peers.Add(name, capacity);
-            }
-            else
-            {
-                logs.addLog(Constants.CPCC_CALL_EXISTS, true, Constants.LOG_ERROR, true);
-            }
-        }
 
         //CALL_TEARDOWN SRC_NAME DST_NAME
-        public void callTeardown(string srcName, string dstName)
+        public void callTeardown(string dstName)
         {
-            sendMessage(Constants.PARSER_CALL_TEARDOWN + " " + srcName + " " + dstName + " " + Constants.CALL_TEARDOWN_REASON);
+            string srcName = myId;
+            sendMessage(nc+"@CallControll#" + Constants.PARSER_CALL_TEARDOWN + "#" + srcName + "#" + dstName + "#" + Constants.CALL_TEARDOWN_REASON);
             logs.addLog("<" + dstName + "> " + Constants.CPCC_CALL_TEARDOWN, true, Constants.LOG_INFO, true);
         }
 

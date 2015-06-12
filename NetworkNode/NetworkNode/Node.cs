@@ -42,6 +42,7 @@ namespace NetworkNode
         public List<string> portsOutTemp { get; set; }
         public List<Port> portsIn = new List<Port>();
         public List<Port> portsOut = new List<Port>();
+        private Dictionary<int, string> connectionIdToMatrixConnection = new Dictionary<int, string>();
 
         public Node(Grid logs, ListView links, MainWindow mainWindow)
         {
@@ -246,11 +247,19 @@ namespace NetworkNode
             //WZOR WIADOMOSCI PRZEROBIC NA WPIS DO SWITCHING TABLE
 
             string[] parsed = order.Split('%');
+            try
+            {
+                int connectionId = Convert.ToInt32(parsed[2].Split('#')[1]);
+                connectionIdToMatrixConnection.Add(connectionId, parsed[1]);
+            }
+            catch { }
+            
             
 
             switch (parsed[0])
             {
                 case Constants.SET_LINK:
+                    parsed[2] = parsed[2].Split('#')[0];
                     string[] parsed1 = parsed[1].Split('.');
                     string[] parsed2 = parsed[2].Split('.');
 
@@ -291,6 +300,25 @@ namespace NetworkNode
                         }
                         
                         switchTable.removeAllLinks();
+                    }
+                    else if (connectionIdToMatrixConnection.ContainsKey(Convert.ToInt32(parsed[1])))
+                    {
+
+                        string[] parsedX = connectionIdToMatrixConnection[Convert.ToInt32(parsed[1])].Split('.');
+                        switchTable.removeLink(parsedX[0], parsedX[1]);
+                        for (int i = links.Items.Count - 1; i >= 0; i--)
+                        {
+                            if (parsedX[0] == crossConnectionList[i].src || parsedX[0]==crossConnectionList[i].dst)
+                            {
+                                Application.Current.Dispatcher.Invoke((Action)(() =>
+                                {
+                                    links.Items.Remove(links.Items[i]);
+                                }));
+                                crossConnectionList.RemoveAt(i);
+                            }
+
+                        }
+                        connectionIdToMatrixConnection.Remove(Convert.ToInt32(parsed[1]));
                     }
                     else
                     {

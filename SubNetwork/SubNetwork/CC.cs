@@ -63,6 +63,13 @@ namespace SubNetwork
                         routingEntry[link.TargetId][1] = link.TargetRouting;
                     }
 
+                    link.Link.Capacity -= connection.Capacity;
+                    foreach (var linkDouble in connection.Path)
+                    {
+                        if (linkDouble.SourceId == link.TargetId && linkDouble.TargetId == link.SourceId)
+                            linkDouble.Link.Capacity -= connection.Capacity;
+                    }
+
                 }
 
                     /*
@@ -94,6 +101,7 @@ namespace SubNetwork
                             Disconnect(connectionId);
                             return false;
                         }
+                    
                 }
 
                 connection.Active = true;
@@ -148,11 +156,12 @@ namespace SubNetwork
             string command="";
             try
             {
+
                 if (label.Contains("CP"))
-                    label = "CP.";
+                    label = label.Split('.')[0] + ".";
                 else if (value.Contains("CP"))
-                    value = "CP.";
-                Query(nodeId + "@CallControll#SET%" + label+"%"+value);
+                    value = value.Split('.')[0] + ".";
+                Query(nodeId + "@CallControll#SET%" + label+"%"+value + "#"+connectionId);
                 Console.WriteLine(nodeId + "@CallControll#rtadd " + value + " "+label+" " + connectionId);
                 Thread.Sleep(100);
                 
@@ -160,38 +169,12 @@ namespace SubNetwork
                
             }
             catch { return false; }
-            /*
-            string[] tokens = response.Split(' ');
-            if (tokens.Length == 5 && tokens[4] == "ok")
-                return true;
-            else
-                return false;*/
+
             
         }
         public void Query(string query)
-        {
-            //if (nodes.ContainsKey(id))
-            //{
-               
-                    network.sendMessage(query);
-
-                    //return response;
-                
-                    /*
-                    Topology.RemoveVertex(nodes[id].tnode);
-                    nodes.Remove(id);
-                    List<int> disconnected = new List<int>();
-                    foreach (int con in connections.Keys)
-                    {
-                        if (connections[con].Nodes.Contains(id))
-                            disconnected.Add(con);
-                    }
-                    foreach (int con in disconnected)
-                        CallController.CallTeardown(connections[con], "system");
-                     * */
-                
-            //}
-            //return "";
+        { 
+            network.sendMessage(query);
         }
         /*
         public List<string> GetConnections()
@@ -238,24 +221,6 @@ namespace SubNetwork
             return i;
         }
 
-
-        public bool AddPath(STM vpath)
-        {
-            string label = "";
-            string value = "";
-            foreach (var link in vpath.Path)
-            {
-                if (label != "")
-                {
-                    value = link.SourceRouting;
-                    //AddRouting(link.SourceId, label, value, vpath.Id);
-                }
-                label = link.TargetRouting;
-            }
-            virtualPaths.Add(vpath.Id, vpath);
-            return true;
-        }
-
         public void AddConnection(NetworkConnection connection)
         {
             connections.Add(connection.Id, connection);
@@ -267,30 +232,22 @@ namespace SubNetwork
         {
             NetworkConnection connection = connections[connectionId];
             foreach (var link in connection.Path)
-            {
-                /*
+            {        
                 if (RemoveRouting(link.SourceId, connection.Id))
-                    link.Link.Capacity += connection.Capacity;*/
+                    link.Link.Capacity += connection.Capacity;
             }
-            //RemoveRouting(connection.Target, connection.Id);
+            RemoveRouting(connection.Target, connection.Id);
             connections.Remove(connectionId);
         }
 
-
-
-        public List<string> GetVPaths()
+        private bool RemoveRouting(string src, int connection)
         {
-            List<string> ret = new List<string>();
-            int[] keys = new int[virtualPaths.Count];
-            virtualPaths.Keys.CopyTo(keys, 0);
-            Array.Sort(keys);
-            foreach (int key in keys)
-            {
-                string item = "[" + key + "] " + virtualPaths[key].Source.Name + " -{" + virtualPaths[key].Path.Count + "}-> " + virtualPaths[key].Target.Name;
-                ret.Add(item);
-            }
-            return ret;
+            //NetworkConnection c = connections[connection];
+            Query(src + "@CallControll#DELETE%" + connection);
+            Thread.Sleep(100);
+            return true;
         }
+
 
         void PeerCoordination() { }
 

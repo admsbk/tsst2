@@ -21,6 +21,7 @@ namespace SubNetwork
         }
         private Dictionary<string, DirectoryEntry> Directory = new Dictionary<string, DirectoryEntry>();
         private Dictionary<string, NetworkConnection> connBuffer = new Dictionary<string, NetworkConnection>();
+        private Dictionary<string, int> ClientsToConnection = new Dictionary<string, int>();
         private Manager manager;
         private CC ConnectionController;
         private transportClient network;
@@ -79,7 +80,9 @@ namespace SubNetwork
             else
             {
                 //i-nni
-                connection = rc.assignRoute(sourceId, targetId, ConnectionController.GetFreeId(), cap);
+                int connectionId = ConnectionController.GetFreeId();
+                connection = rc.assignRoute(sourceId, targetId, connectionId, cap);
+                ClientsToConnection.Add(srcName + "#" + dstName, connectionId);
                 Establish(connection);
                 toReturn[0] = "Setting up connection";
                 toReturn[1] = connection;
@@ -93,9 +96,11 @@ namespace SubNetwork
             object[] toReturn = new object[2];
             NetworkConnection connection = new NetworkConnection();
             int i = 0;
+            int connectionId=0;
             for ( ; i < ports.Length; i++)
             {
-                connection = rc.ExternalRequest(ports[i], dstName, dstId, ConnectionController.GetFreeId(), cap);
+                connectionId = ConnectionController.GetFreeId();
+                connection = rc.ExternalRequest(ports[i], dstName, dstId, connectionId, cap);
                 if (connection != null)
                     break;
             }
@@ -103,6 +108,7 @@ namespace SubNetwork
             //toReturn[0] = "";
             toReturn[0]=ports[i];
             toReturn[1] = connection;
+            ClientsToConnection.Add(ports[i] + "#" + dstName, connectionId);
             return toReturn;
 
         }
@@ -130,7 +136,11 @@ namespace SubNetwork
             return false;
         }
 
-
+        public void CallTeardown(string message)
+        {
+            string key = message.Split('#')[2] + "#" + message.Split('#')[3];
+            ConnectionController.Disconnect(ClientsToConnection[key]);
+        }
 
         public void CallTeardown(NetworkConnection connection, string reason)
         {

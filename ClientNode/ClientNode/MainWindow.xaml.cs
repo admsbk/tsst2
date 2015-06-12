@@ -27,7 +27,8 @@ namespace ClientNode
         Client client;
         CPCC cpcc;
         Logs log;
-        private int[] connections = {0, 0, 0, 0};
+        private int[] connections = {0, 0};
+        string[] clients = new string[2];
 
 
         public MainWindow()
@@ -61,7 +62,7 @@ namespace ClientNode
             switch (i)
             {
                 case 1:
-                    
+                    clients[0] = e.message.Split('#')[2];
                     this.call1.Dispatcher.Invoke(
                         System.Windows.Threading.DispatcherPriority.Normal,
                         new Action(() =>
@@ -73,6 +74,7 @@ namespace ClientNode
                     );
                     break;
                 case 2:
+                    clients[1] = e.message.Split('#')[2];
                     this.call2.Dispatcher.Invoke(
                         System.Windows.Threading.DispatcherPriority.Normal,
                         new Action(() =>
@@ -83,28 +85,7 @@ namespace ClientNode
                         })
                     );
                     break;
-                case 3:
-                    this.call3.Dispatcher.Invoke(
-                        System.Windows.Threading.DispatcherPriority.Normal,
-                        new Action(() =>
-                        {
-                            this.call3.IsEnabled = true;
-                            this.call3.Header = e.message.Split('#')[2];
-                            this.Button_3.IsEnabled = true;
-                        })
-                    );
-                    break;
-                case 4:
-                    this.call4.Dispatcher.Invoke(
-                        System.Windows.Threading.DispatcherPriority.Normal,
-                        new Action(() =>
-                        {
-                            this.call4.IsEnabled = true;
-                            this.call4.Header = e.message.Split('#')[2];
-                            this.Button_4.IsEnabled = true;
-                        })
-                    );
-                    break;
+               
             }
         }
 
@@ -127,6 +108,11 @@ namespace ClientNode
             startService();           
         }
 
+        private void End1_Click(object sender, RoutedEventArgs e)
+        {
+            cpcc.callTeardown(clients[0]);
+        }
+
         private void startService()
         {
             client.startService();
@@ -137,9 +123,17 @@ namespace ClientNode
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             //this.chat.TextAlignment = TextAlignment.Right;
-            client.sendMessage(this.toSend.Text);
+            client.sendMessage(this.toSend.Text, 0);
             //this.chat.TextAlignment = TextAlignment.Left;
         }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            //this.chat.TextAlignment = TextAlignment.Right;
+            client.sendMessage(this.toSend.Text, 1);
+            //this.chat.TextAlignment = TextAlignment.Left;
+        }
+
         private void Load_Conf_Click(object sender, EventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -176,11 +170,29 @@ namespace ClientNode
         private void CallingButton_Click(object sender, RoutedEventArgs e)
         {
             string callingName = this.CallName.Text;
-            cpcc.sendMessage(cpcc.nc+"@CallControll#CallRequest#" + client.name +"#" + callingName+"#34");
+            string cap = "";
+
+            switch (this.vc.SelectedIndex)
+            {
+                case 0:
+                    cap = "34";
+                    break;
+                case 1:
+                    cap = "140";
+                    break;
+            }
+
+            cpcc.sendMessage(cpcc.nc+"@CallControll#CallRequest#" + client.name +"#" + callingName+"#"+cap);
+            
             //Proba polaczenia (tylko do kogo? NM?)
 
             this.chatBox.IsEnabled = true;
             this.Button_1.IsEnabled = true;
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
         }
 
     }

@@ -126,7 +126,15 @@ namespace networkLibrary
         public void removeLink(string src, string srcSlot)
         {
             string tempInPort = src+"."+srcSlot;
-            //this.SwitchingTable.Remove(tempInPort);
+            Pair<string, string> toRm = new Pair<string,string>();
+            foreach (Pair<string, string> pair in SwitchingTable)
+            {
+                if (pair.First == tempInPort)
+                    toRm = pair;
+                else if (pair.Second == tempInPort)
+                    toRm = pair;
+            }
+            this.SwitchingTable.Remove(toRm);
         }
 
         public void removeAllLinks()

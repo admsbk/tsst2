@@ -38,14 +38,14 @@
             this.logColumn});
             this.logsListView.Location = new System.Drawing.Point(3, 5);
             this.logsListView.Name = "logsListView";
-            this.logsListView.Size = new System.Drawing.Size(279, 253);
+            this.logsListView.Size = new System.Drawing.Size(640, 253);
             this.logsListView.TabIndex = 0;
             this.logsListView.UseCompatibleStateImageBehavior = false;
             this.logsListView.View = System.Windows.Forms.View.List;
             // 
             // logColumn
             // 
-            this.logColumn.Width = 279;
+            this.logColumn.Width = 1000;
             // 
             // Logs
             // 

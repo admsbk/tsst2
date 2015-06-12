@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace SubNetwork
 {
@@ -148,7 +149,18 @@ namespace SubNetwork
                     this.callCoordinationNack(message);
                 //else
                     //this.ClientCallRequest(message);
-            }       
+            }
+            else if (message.Contains("CallTeardown"))
+            {
+                this.ClientCallTeardown(message);
+            }
+        }
+
+        private void ClientCallTeardown(string msg)
+        {
+            addLog(window.logList, "Call teardown "+msg.Split('@')[1], Constants.LOG_INFO);
+            networkCallController.CallTeardown(msg);
+
         }
 
         private void ClientCastParametersRcv(string message)
@@ -180,16 +192,18 @@ namespace SubNetwork
                     string traceroute = "";
                     try
                     {
+                        signalization.sendMessage(nc.Path[nc.Path.Count - 1].TargetId + "@CallControll#CallCoordination#" + nc.Path[0].SourceId + "#" + nc.Path[nc.Path.Count - 1].TargetId);
+                        Thread.Sleep(100);
                         addLog(window.logList, "Routing...", Constants.LOG_INFO);
                         for (int i = 0; i < nc.Path.Count; i++)
                             traceroute += nc.Path[i].SourceRouting + "##" + nc.Path[i].TargetRouting + "->";
                         addLog(window.logList, "Traceroute: " + traceroute, Constants.LOG_INFO);
-                        signalization.sendMessage(nc.Source + "@CallControll#CallCoordination#" + nc.Target + "#ok");
+                        
                     }
                     catch
                     {
                         
-                        addLog(window.logList, "Traceroute failed", Constants.LOG_ERROR);
+                        addLog(window.logList, "Traceroute failed, no path found", Constants.LOG_ERROR);
                     }
                 }
                 else

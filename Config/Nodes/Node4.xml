@@ -7,6 +7,7 @@
 	  <Port Id="P4" />
 	  <Port Id="P5" />
 	  <Port Id="P6" />
-	  <Port Id="CP" />
+	  <Port Id="CP1"/> 
+	  <Port Id="CP2" />
   </Ports>
 </Node>

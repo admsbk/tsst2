@@ -106,7 +106,7 @@ namespace networkLibrary
         public const string CPCC_CALL_EXISTS = "Call Request error. Already connected to selected user.";
         public const string PARSER_CALL_REQUEST = "CALL_REQUEST";
         public const string PARSER_CALL_REQUEST_RESPONSE = "CALL_REQUEST_RESPONSE";
-        public const string PARSER_CALL_TEARDOWN = "CALL_TEARDOWN";
+        public const string PARSER_CALL_TEARDOWN = "CallTeardown";
         public const string PARSER_CALL_ACCEPT = "CALL_ACCEPT";
         public const string CALL_TEARDOWN_REASON = "1";
         public const string UNKNOWN_CLIENT = "Unknown Client Request";
