@@ -49,7 +49,7 @@ namespace ClientNode
             {
                 string[] parts = e.message.Split('#');
                 string response = parseMsgFromNCC(e.message);
-                signalizationNetwork.sendMessage(nc.Split('%')[0] + "@CallControll#CallCoordination#" + parts[2] + "#" + this.myId + "#" + response);
+                signalizationNetwork.sendMessage(nc.Split('%')[0] + "@CallControll#CallCoordination#" + this.myId + "#" + parts[3] + "#" + response);
             }
 
             else if (e.message.Contains("CallCoordination") && e.message.Contains("ok")) 

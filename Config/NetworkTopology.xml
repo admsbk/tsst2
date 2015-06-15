@@ -26,7 +26,7 @@
 		<Link Id="Link24" SrcId="NetworkNode11" DstId="NetworkNode2" SrcPortId="P2" DstPortId="P6" SrcDomainID="Domain2" DstDomainID="Domain1" Weight="10" Length="5" Type="External2"/>
 		<Link Id="Link25" SrcId="NetworkNode11" DstId="NetworkNode9" SrcPortId="P3" DstPortId="P3" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/>
 		<Link Id="Link3" SrcId="ClientNode3" DstId="NetworkNode11" SrcPortId="P1" DstPortId="CP1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/> 
-		<Link Id="Link4" SrcId="ClientNode4" DstId="NetworkNode9" SrcPortId="P1" DstPortId="CP1" SrcDomainID="Domain2" DstDomainID="Domain2" Weight="10" Length="5" Type="Internal"/> 
+		<Link Id="Link4" SrcId="ClientNode4" DstId="NetworkNode4" SrcPortId="P1" DstPortId="CP1" SrcDomainID="Domain1" DstDomainID="Domain1" Weight="10" Length="5" Type="Internal"/> 
 		
 		
 		<ConnectionControl Id="CCLink1" SrcId="NCC1@CallControll" DstId="NCC2@CallControll"/>

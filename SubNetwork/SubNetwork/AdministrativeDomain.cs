@@ -29,6 +29,7 @@ namespace SubNetwork
         private string nccname;
         private Dictionary<string, string> requestsToAnswer;
         private Dictionary<string, NetworkConnection> toEstablish;
+        private Dictionary<string, string> waitForAck;
         private List<string> neighbours;
         private List<string> parents;
         private List<string> children;
@@ -46,6 +47,7 @@ namespace SubNetwork
             children = new List<string>();
             requestsToAnswer = new Dictionary<string, string>();
             toEstablish = new Dictionary<string, NetworkConnection>();
+            waitForAck = new Dictionary<string, string>();
         }
 
         public void readConfig(string xmlConfigPath, string xmlTopologyPath)
@@ -77,6 +79,7 @@ namespace SubNetwork
             try
             {
                 manager.Init(linkResourceManager);
+                addLog(window.logList, "LRM to CC: Local topology", Constants.LOG_INFO);
                 signalization = new transportClient(CloudIp, CloudPort);
                 msgHandler = new transportClient.NewMsgHandler(newMessageReceived);
                 signalization.OnNewMessageRecived += msgHandler;
@@ -105,7 +108,7 @@ namespace SubNetwork
         private void newMessageReceived(object a, MessageArgs e) 
         {
             string[] temp = e.message.Split('#');
-            addLog(window.logList, e.message, Constants.LOG_INFO);
+            //addLog(window.logList, e.message, Constants.LOG_INFO);
             if (temp[0].Contains("NetworkNode"))
                 nodeParser(e.message);
             else if (temp[0].Contains("Client"))
@@ -129,7 +132,7 @@ namespace SubNetwork
 
         private void clientParser(string message) 
         {
-            addLog(window.logList, "Client: " + message, Constants.LOG_INFO);
+            //addLog(window.logList, "Client: " + message, Constants.LOG_INFO);
             
             if (message.Contains("MyParams"))
             {
@@ -178,44 +181,61 @@ namespace SubNetwork
         {
             string[] args = message.Split('#');
 
-            int callingId = networkCallController.DirectoryRequest(args[3]);
-            int callerId = networkCallController.DirectoryRequest(message.Split('@')[0]);
+            string callingName = args[3];
+            string callerName = message.Split('@')[0];
+            int callingId = networkCallController.DirectoryRequest(callingName);
+            int callerId = networkCallController.DirectoryRequest(callerName);
+            int cap = Convert.ToInt32(args[4]);
+
+            
             if (callingId != -1)
             {
-
-                object[] routeOutput = networkCallController.CallRequest(message.Split('@')[0], args[3], callerId, callingId, Convert.ToInt32(args[4]));
-                NetworkConnection nc = (NetworkConnection)routeOutput[1];
-                string syntax = (string)routeOutput[0];
-
-                if (syntax == "Setting up connection")
-                {
-                    string traceroute = "";
-                    try
-                    {
-                        signalization.sendMessage(nc.Path[nc.Path.Count - 1].TargetId + "@CallControll#CallCoordination#" + nc.Path[0].SourceId + "#" + nc.Path[nc.Path.Count - 1].TargetId);
-                        Thread.Sleep(100);
-                        addLog(window.logList, "Routing...", Constants.LOG_INFO);
-                        for (int i = 0; i < nc.Path.Count; i++)
-                            traceroute += nc.Path[i].SourceRouting + "##" + nc.Path[i].TargetRouting + "->";
-                        addLog(window.logList, "Traceroute: " + traceroute, Constants.LOG_INFO);
-                        
-                    }
-                    catch
-                    {
-                        
-                        addLog(window.logList, "Traceroute failed, no path found", Constants.LOG_ERROR);
-                    }
-                }
-                else
-                {
-                    addLog(window.logList, syntax, Constants.LOG_INFO);
-                    requestsToAnswer.Add(message.Split('@')[0] + "#" + args[3], callerId + "#" + callingId + "#" + args[4]);
-                    
-                }
+                addLog(window.logList, "CPCC -> NCC: "+"CallRequest " + callerName + " " + callingName, Constants.LOG_INFO);
+                addLog(window.logList, "Directory request: " + message.Split('@')[0] + " ->Response " + callerId, Constants.LOG_INFO);
+                addLog(window.logList, "Directory request: " + args[3] + " ->Responset " + callingId, Constants.LOG_INFO);
+                signalization.sendMessage(callerName + "@CallControll#CallCoordination#" + callerName + "#" + callingName);
+                Thread.Sleep(100);
+                addLog(window.logList, "NCC: waiting for call coordination ok", Constants.LOG_INFO);
+                waitForAck.Add(callerName + "#" + callingName, callerName + "#" + callerName + "#" + callerId + "#" + callingId + "#" + cap);
             }
 
             else
                 addLog(window.logList, "Unknown called client", Constants.LOG_ERROR);
+        }
+
+        private void cos(string callerName, string callingName, int callerId, int callingId, int cap, string message)
+        {
+
+            object[] routeOutput = networkCallController.CallRequest(callerName, callingName, callerId, callingId, cap);
+            NetworkConnection nc = (NetworkConnection)routeOutput[1];
+
+            string syntax = (string)routeOutput[0];
+
+            if (syntax == "Setting up connection")
+            {
+                string traceroute = "";
+                try
+                {
+                    signalization.sendMessage(nc.Path[nc.Path.Count - 1].TargetId + "@CallControll#CallCoordination#" + nc.Path[0].SourceId + "#" + nc.Path[nc.Path.Count - 1].TargetId);
+                    Thread.Sleep(100);
+                    addLog(window.logList, "Routing...", Constants.LOG_INFO);
+                    for (int i = 0; i < nc.Path.Count; i++)
+                        traceroute += nc.Path[i].SourceRouting + "##" + nc.Path[i].TargetRouting + "->";
+                    addLog(window.logList, "Traceroute: " + traceroute, Constants.LOG_INFO);
+
+                }
+                catch
+                {
+
+                    addLog(window.logList, "Traceroute failed, no path found", Constants.LOG_ERROR);
+                }
+            }
+            else
+            {
+                addLog(window.logList, syntax, Constants.LOG_INFO);
+                requestsToAnswer.Add(callingName + "#" + callerName, callerId + "#" + callingId + "#" + cap);
+
+            }
         }
 
         private void nccParser(string message)
@@ -228,7 +248,12 @@ namespace SubNetwork
             else if (message.Contains("CallCoordination"))
             {
                 NccCallCoordination(message);
-            } 
+            }
+
+            else if (message.Contains("PeerCoordination"))
+            {
+                NccPeerCoordination(message);
+            }
         }
 
         private void ExternalDirectoryCast(string message)
@@ -277,11 +302,11 @@ namespace SubNetwork
                 this.callCoordinationNack(message);
             //call coordination od innego ncc
             else
-                this.callCoordinationReceived(message);
+                this.peerCoordinationReceived(message);
         }
 
         //od innego NCC
-        private void callCoordinationReceived(string message) 
+        private void peerCoordinationReceived(string message) 
         {
             int j = 0;
             string[] subMessage = message.Split('#');
@@ -309,11 +334,11 @@ namespace SubNetwork
             }
             
             //info do klienta
-            signalization.sendMessage(subMessage[3] + "@CallControll#CallCoordination#" + subMessage[2]);
+            signalization.sendMessage(subMessage[3] + "@CallControll#PeerCoordination#" + subMessage[2]);
 
             //dodanie do "bufora", czyściec dla polaczen
-            this.toEstablish.Add(subMessage[3] + "@CallControll#CallCoordination#" + subMessage[2], nc);
-            this.requestsToAnswer.Add(subMessage[3] + "@CallControll#CallCoordination#" + subMessage[2], subMessage[0].Split('%')[0]);
+            this.toEstablish.Add(subMessage[3] + "@CallControll#PeerCoordination#" + subMessage[2], nc);
+            this.requestsToAnswer.Add(subMessage[3] + "@CallControll#PeerCoordination#" + subMessage[2], subMessage[0].Split('%')[0]);
             //signalization.sendMessage(message.Split('#')[0].Split('%')[0]+"#CallCoordinationOK");
         }
 
@@ -322,11 +347,56 @@ namespace SubNetwork
         {
             try
             {
+                
                 //przyszlo ack
                 string[] msg = message.Split('#');
                 string key = msg[0].Split('%')[0] + "#CallCoordination#" + msg[2];
+                addLog(window.logList, "NCC received: " + msg[0] + " " + msg[1] + " "+msg[2] + " ok", Constants.LOG_INFO);
+                string input = waitForAck[msg[2]+"#"+msg[3]];
+                string callerName = input.Split('#')[0];
+                string callingName = input.Split('#')[1];
+                int callerId = Convert.ToInt32(input.Split('#')[2]);
+                int callingId = Convert.ToInt32(input.Split('#')[3]);
+                int cap = Convert.ToInt32(input.Split('#')[4]);
+
+                addLog(window.logList, "RC routeTableQuery: " + input, Constants.LOG_INFO);
+                object[] routeOutput = networkCallController.CallRequest(callerName, callingName, callerId, callingId, cap);
+                NetworkConnection nc = (NetworkConnection)routeOutput[1];
+
+                string syntax = (string)routeOutput[0];
+
+                if (syntax == "Setting up connection" && nc != null)
+                {
+                    string traceroute = "LRM: ";
+                    try
+                    {
+                        //signalization.sendMessage(nc.Path[nc.Path.Count - 1].TargetId + "@CallControll#CallCoordination#" + nc.Path[0].SourceId + "#" + nc.Path[nc.Path.Count - 1].TargetId);
+                        //Thread.Sleep(100);
+                        addLog(window.logList, "LRM: ResourceAllocation", Constants.LOG_INFO);
+                        for (int i = 0; i < nc.Path.Count; i++)
+                            traceroute += nc.Path[i].SourceRouting + ", " + nc.Path[i].TargetRouting + "->";
+                        addLog(window.logList, "___Allocated Resources: " + traceroute, Constants.LOG_INFO);
+
+                    }
+                    catch
+                    {                      
+                    }
+                }
+
+                else if (syntax == "Waiting for Call Coordination ok")
+                {
+                    addLog(window.logList, syntax, Constants.LOG_INFO);
+                    requestsToAnswer.Add(callingName + "#" + callerName, callerId + "#" + callingId + "#" + cap);
+
+                }
+
+                else
+                {
+                    addLog(window.logList, "Traceroute failed, no path found", Constants.LOG_ERROR);
+                }
+
                 //wziecie z czyscca i zestawienie
-                NetworkConnection nc = this.toEstablish[key];
+                //NetworkConnection nc = this.toEstablish[key];
                 foreach (var link in nc.Path)
                 {
                     if (link.TargetId.Contains("Domain"))
@@ -338,7 +408,7 @@ namespace SubNetwork
                 if (networkCallController.Establish(nc))
                 {
                     
-                    addLog(window.logList, "Connected ", Constants.LOG_INFO);
+                    addLog(window.logList, "Subnetwork established ", Constants.LOG_INFO);
                     string choosedSlot = this.toEstablish[key].Path[0].Link.Name +":"+ this.toEstablish[key].Path[0].SourceRouting.Split('.')[1];
                     string query = this.requestsToAnswer[key] + "#CallCoordination#" + msg[2] + "#" + msg[3] + "#" + msg[4] + "#" + choosedSlot;
                     signalization.sendMessage(query);
@@ -395,6 +465,11 @@ namespace SubNetwork
                 Console.WriteLine("powrot fail");
 
             }
+        }
+
+        private void NccPeerCoordination(string message)
+        {
+
         }
 
         private void callCoordinationNack(string message)

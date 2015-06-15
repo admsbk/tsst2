@@ -1,0 +1,2 @@
+NetworkNode1%SET%CP1.%P3.0
+NetworkNode4%SET%P1.0%CP1.
