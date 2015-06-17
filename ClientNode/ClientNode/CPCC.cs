@@ -45,11 +45,11 @@ namespace ClientNode
         private void onNewMessage(object a, MessageArgs e)
         {
             logs.addLog(e.message, true, Constants.LOG_INFO, true);
-            if (e.message.Contains("CallCoordination") && !e.message.Contains("ok"))
+            if (e.message.Contains("CallRequest") && !e.message.Contains("ok"))
             {
                 string[] parts = e.message.Split('#');
                 string response = parseMsgFromNCC(e.message);
-                signalizationNetwork.sendMessage(nc.Split('%')[0] + "@CallControll#CallCoordination#" + this.myId + "#" + parts[3] + "#" + response);
+                signalizationNetwork.sendMessage(nc.Split('%')[0] + "@CallControll#CallRequest#" + parts[2] + "#" + this.myId + "#" + response);
             }
 
             else if (e.message.Contains("CallCoordination") && e.message.Contains("ok")) 
@@ -67,28 +67,26 @@ namespace ClientNode
         public string parseMsgFromNCC(string query)
         {
             
-                string[] parts = query.Split('#');
-                DialogResult dialogResult = MessageBox.Show(parts[2] + " is calling\nAccept?", myName + " CPCC", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.Yes)
-                {
+            string[] parts = query.Split('#');
+            DialogResult dialogResult = MessageBox.Show(parts[2] + " is calling\nAccept?", myName + " CPCC", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
                     
-                    logs.addLog("Caller connected " + query, true, Constants.LOG_INFO, true);
-                    MessageArgs arg = new MessageArgs(query);
-                    OnNewConnectionEstablished(this, arg);
-                    return "ok";
-                    //do something
-                }
-                else if (dialogResult == DialogResult.No)
-                {
-                    return "fail";
-                    //do something else
-                }
-                else
-                {
-                    return "fail";
-                }
-            
-           
+                logs.addLog("Caller connected " + query, true, Constants.LOG_INFO, true);
+                MessageArgs arg = new MessageArgs(query);
+                OnNewConnectionEstablished(this, arg);
+                return "ok";
+                //do something
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                return "fail";
+                //do something else
+            }
+            else
+            {
+                return "fail";
+            }
         }
 
 

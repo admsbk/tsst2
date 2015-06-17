@@ -73,18 +73,6 @@ namespace ClientNode
                         })
                     );
                     break;
-                case 2:
-                    clients[1] = e.message.Split('#')[2];
-                    this.call2.Dispatcher.Invoke(
-                        System.Windows.Threading.DispatcherPriority.Normal,
-                        new Action(() =>
-                        {
-                            this.call2.IsEnabled = true;
-                            this.call2.Header = e.message.Split('#')[2];
-                            this.Button_2.IsEnabled = true;
-                        })
-                    );
-                    break;
                
             }
         }

@@ -60,7 +60,7 @@ namespace SubNetwork
             }
         }
 
-        public object[] CallRequest(string srcName, string dstName, int sourceId, int targetId, int cap)
+        public object[] intraDomainCall(string srcName, string dstName, int sourceId, int targetId, int cap)
         {
             object[] toReturn = new object[2];
             NetworkConnection connection = new NetworkConnection();
@@ -69,10 +69,10 @@ namespace SubNetwork
             {
                 //e-nni
                 string portsAvailable = rc.getExternalPorts(sourceId, targetId, ConnectionController.GetFreeId(), cap); 
-                network.sendMessage("NCC"+targetId/1000+"@CallControll#CallCoordination#"+srcName+"#"+dstName+"#"+cap+"#"+portsAvailable);
+                network.sendMessage("NCC"+targetId/1000+"@CallControll#PeerCoordination#"+srcName+"#"+dstName+"#"+cap+"#"+portsAvailable);
      
                 //connBuffer.Add("CallCoordination#"+srcName+"#"+dstName, connection);
-                toReturn[0] = "Waiting for Call Coordination ok";
+                toReturn[0] = "Waiting for Peer Coordination ok";
                 toReturn[1] = null;
                 return toReturn;
             }
@@ -91,7 +91,24 @@ namespace SubNetwork
             
         }
 
-        public object[] CallCoordination(string[] ports, string dstName, int dstId, int cap)
+        public string PeerCoordination(string srcName, string dstName, int sourceId, int targetId, int cap)
+        {
+            NetworkConnection connection = new NetworkConnection();
+
+            if (targetId % 1000 == 0)
+            {
+                //e-nni
+                string portsAvailable = rc.getExternalPorts(sourceId, targetId, ConnectionController.GetFreeId(), cap);
+                network.sendMessage("NCC" + targetId / 1000 + "@CallControll#PeerCoordination#" + srcName + "#" + dstName + "#" + cap + "#" + portsAvailable);
+
+                //connBuffer.Add("CallCoordination#"+srcName+"#"+dstName, connection);
+                return "Waiting for Peer Coordination ok";
+            }
+            return "";
+
+        }
+
+        public object[] peerCoordinationReceived(string[] ports, string dstName, int dstId, int cap)
         {
             object[] toReturn = new object[2];
             NetworkConnection connection = new NetworkConnection();
@@ -113,7 +130,7 @@ namespace SubNetwork
 
         }
 
-        public NetworkConnection CallCoordinationAck(string srdDstName, string connArgs, string choosedSlot)
+        public NetworkConnection PeerCoordinationAck(string srdDstName, string connArgs, string choosedSlot)
         {
             NetworkConnection connection = new NetworkConnection();
             string[] names = srdDstName.Split('#');

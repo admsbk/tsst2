@@ -2,6 +2,5 @@
 <Client Id="ClientNode1" CloudHost="localhost" CloudPort="3333" Name="1.Adaś" NetworkController="NCC1">
 <Ports>
       	<Port Id="P1" />
-		<Port Id="P2" />
   </Ports>
 </Client>

@@ -24,17 +24,7 @@
                             <Button Content="X" HorizontalAlignment="Left" Height="20" Margin="282,196,0,0" VerticalAlignment="Top" Width="18" Click="End1_Click"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="call2" Header="Call 2" IsEnabled="False">
-                        <Grid HorizontalAlignment="Left" Height="216" VerticalAlignment="Top"
-		            Width="310" Margin="0,0,-6,-2">
-                            <Button x:Name="Button_2" Content="Send Message" HorizontalAlignment="Left" Height="20" Margin="196,196,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_2" IsEnabled="False"/>
-                            <TextBox x:Name="toSend2" HorizontalAlignment="Left" Height="20" Margin="0,196,0,0" TextWrapping="Wrap" Text="Write text to send" VerticalAlignment="Top" Width="191"/>
-                            <ScrollViewer x:Name="scroll2" MaxHeight="190" VerticalAlignment="Top" IsEnabled="True" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,0,10,0" Height="196">
-                                <Grid x:Name="chat2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="290"/>
-                            </ScrollViewer>
-                        </Grid>
-                    </TabItem>
-                    
+
                 </TabControl>
                 <ComboBox x:Name="vc" Text="Cont" HorizontalAlignment="Left" Height="23" Margin="149,0,0,0" VerticalAlignment="Top" Width="84" RenderTransformOrigin="0.393,0.348" SelectionChanged="ComboBox_SelectionChanged">
                     <ComboBoxItem Content="VC-3" />
